@@ -1,0 +1,263 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-segment color="light" class="pl-1 pr-1" value="order" (ionChange)='segmentChanged($event)'>
+      <ion-segment-button  value="order">
+        <ion-label class="text-white text-xs">New Order</ion-label>
+      </ion-segment-button>
+      <ion-segment-button  value="processing">
+        <ion-label class="text-white text-xs">Ongoing </ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="completed">
+        <ion-label class="text-white text-xs">Complete </ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="p-2">
+    <div *ngIf="switchTab === 'order'" class="p-1">
+
+        <div class="border border-gray-300 rounded-md">
+          <div class="p-2">
+            <p class="text-red-500 text-md mt-2 font-bold"> ITEMS</p>
+      
+            <!-- Items Div -->
+            <div class="border-gray-300 border-dashed border-b">
+              <p class="text-black text-lg font-semibold mt-2">Chicken Biryani X 1</p>
+              <div class="flex justify-between">
+                <p>- Half</p>
+                <p>120 /-</p>
+              </div>
+            </div>
+      
+            <!-- Items Div -->
+            <div class="border-gray-300 border-dashed border-b mt-1">
+              <div class="flex justify-between">
+                <p class="text-black text-lg font-semibold mt-2">Mutton Biryani X 1</p>
+                <p>300 /-</p>
+              </div>
+            </div>
+      
+            <div class="flex justify-between mt-2">
+              <p class="text-gray-500 text-md mt-2"> TOTAL AMOUNT</p>
+              <p class="text-black font-semibold text-md mt-2"> 750.20</p>
+            </div>
+          </div>
+      
+          <div class="p-2">
+            <p class="text-red-500 font-bold text-md mt-2"> Address</p>
+      
+            <div class="mt-2 flex justify-start">
+              <div>
+                <p class="text-lg text-gray-500"> Pickup</p>
+                <p class="text-lg text-black">Railway Station, Badnera</p>
+              </div>
+            </div>
+      
+            <div class="mt-2 flex justify-start">
+              <div>
+                <p class="text-lg text-gray-500"> DropOff</p>
+                <p class="text-lg text-black">Sai Nivas, Dastur Nagar, Amravati</p>
+              </div>
+            </div>
+          </div>
+      
+          <div class="p-2">
+            <p class="text-red-500 font-bold text-md mt-2"> USER DETAILS</p>
+      
+            <div class="mt-2 flex justify-between">
+              <div>
+                <p class="text-lg text-gray-500"> User Name :</p>
+              </div>
+              <div>
+                <p class="text-lg text-black">Ashwini Talware</p>
+              </div>
+            </div>
+      
+            <div class="mt-2 flex justify-between">
+              <div>
+                <p class="text-lg text-gray-500">Mobile Number :</p>
+              </div>
+              <div>
+                <p class="text-lg text-black">+91 78455125623</p>
+              </div>
+            </div>
+          </div>
+      
+          <ion-row>
+            <ion-col size="6">
+              <ion-button class="btn_class" size="small" color="success" expand="block">
+                Accept
+              </ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button class="btn_class" color="danger" expand="block" fill="outline">
+                Reject
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </div>
+
+      
+    </div>
+
+
+    <div *ngIf="switchTab === 'processing'" class="p-1">
+      <div class="border border-gray-300 rounded-md">
+        <div class="p-2">
+          <p class="text-red-500 text-md mt-2 font-bold"> ITEMS</p>
+    
+          <!-- Items Div -->
+          <div class="border-gray-300 border-dashed border-b">
+            <p class="text-black text-lg font-semibold mt-2">Chicken Biryani X 1</p>
+            <div class="flex justify-between">
+              <p>- Half</p>
+              <p>120 /-</p>
+            </div>
+          </div>
+    
+          <!-- Items Div -->
+          <div class="border-gray-300 border-dashed border-b mt-1">
+            <div class="flex justify-between">
+              <p class="text-black text-lg font-semibold mt-2">Mutton Biryani X 1</p>
+              <p>300 /-</p>
+            </div>
+          </div>
+    
+          <div class="flex justify-between mt-2">
+            <p class="text-gray-500 text-md mt-2"> TOTAL AMOUNT</p>
+            <p class="text-black font-semibold text-md mt-2"> 750.20</p>
+          </div>
+        </div>
+    
+        <div class="p-2">
+          <p class="text-red-500 font-bold text-md mt-2"> Address</p>
+    
+          <div class="mt-2 flex justify-start">
+            <div>
+              <p class="text-lg text-gray-500"> Pickup</p>
+              <p class="text-lg text-black">Railway Station, Badnera</p>
+            </div>
+          </div>
+    
+          <div class="mt-2 flex justify-start">
+            <div>
+              <p class="text-lg text-gray-500"> DropOff</p>
+              <p class="text-lg text-black">Sai Nivas, Dastur Nagar, Amravati</p>
+            </div>
+          </div>
+        </div>
+    
+        <div class="p-2">
+          <p class="text-red-500 font-bold text-md mt-2"> USER DETAILS</p>
+    
+          <div class="mt-2 flex justify-between">
+            <div>
+              <p class="text-lg text-gray-500"> User Name :</p>
+            </div>
+            <div>
+              <p class="text-lg text-black">Ashwini Talware</p>
+            </div>
+          </div>
+    
+          <div class="mt-2 flex justify-between">
+            <div>
+              <p class="text-lg text-gray-500">Mobile Number :</p>
+            </div>
+            <div>
+              <p class="text-lg text-black">+91 78455125623</p>
+            </div>
+          </div>
+        </div>
+    
+        <div class="border-b border-gray-300 border-dashed mt-3"></div>
+    
+        <div class="flex justify-between p-2">
+          <p class="text-black font-bold text-lg mt-2"> Status</p>
+          <p class="text-green-500 font-semibold text-md mt-2"> Ready to pickup</p>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="switchTab === 'completed'" class="p-1">
+        <div class="border border-gray-300 rounded-md">
+          <div class="p-2">
+            <p class="text-red-500 text-md mt-2 font-bold"> ITEMS</p>
+      
+            <!-- Items Div -->
+            <div class="border-gray-300 border-dashed border-b">
+              <p class="text-black text-lg font-semibold mt-2">Chicken Biryani X 1</p>
+              <div class="flex justify-between">
+                <p>- Half</p>
+                <p>120 /-</p>
+              </div>
+            </div>
+      
+            <!-- Items Div -->
+            <div class="border-gray-300 border-dashed border-b mt-1">
+              <div class="flex justify-between">
+                <p class="text-black text-lg font-semibold mt-2">Mutton Biryani X 1</p>
+                <p>300 /-</p>
+              </div>
+            </div>
+      
+            <div class="flex justify-between mt-2">
+              <p class="text-gray-500 text-md mt-2"> TOTAL AMOUNT</p>
+              <p class="text-black font-semibold text-md mt-2"> 750.20</p>
+            </div>
+          </div>
+      
+          <div class="p-2">
+            <p class="text-red-500 font-bold text-md mt-2"> Address</p>
+      
+            <div class="mt-2 flex justify-start">
+              <div>
+                <p class="text-lg text-gray-500"> Pickup</p>
+                <p class="text-lg text-black">Railway Station, Badnera</p>
+              </div>
+            </div>
+      
+            <div class="mt-2 flex justify-start">
+              <div>
+                <p class="text-lg text-gray-500"> DropOff</p>
+                <p class="text-lg text-black">Sai Nivas, Dastur Nagar, Amravati</p>
+              </div>
+            </div>
+          </div>
+      
+          <div class="p-2">
+            <p class="text-red-500 font-bold text-md mt-2"> USER DETAILS</p>
+      
+            <div class="mt-2 flex justify-between">
+              <div>
+                <p class="text-lg text-gray-500"> User Name :</p>
+              </div>
+              <div>
+                <p class="text-lg text-black">Ashwini Talware</p>
+              </div>
+            </div>
+      
+            <div class="mt-2 flex justify-between">
+              <div>
+                <p class="text-lg text-gray-500">Mobile Number :</p>
+              </div>
+              <div>
+                <p class="text-lg text-black">+91 78455125623</p>
+              </div>
+            </div>
+          </div>
+      
+          <div class="border-b border-gray-300 border-dashed mt-3"></div>
+      
+          <div class="flex justify-between p-2">
+            <p class="text-black font-bold text-lg mt-2"> Status</p>
+            <p class="text-red-500 font-semibold text-md mt-2"> Order is Delivered</p>
+          </div>
+        </div>
+
+      
+    </div>
+
+  </div>
+</ion-content>

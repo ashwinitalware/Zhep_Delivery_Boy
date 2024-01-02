@@ -1,0 +1,28 @@
+<div class="p-4">
+  <div class="flex justify-center logo mt-10">
+    <img width="120" height="120" src="assets/icon1.png" alt="Logo" />
+  </div>
+  <div class="flex justify-center mt-3">
+    <p class="text-lg text-black">Enter your login details</p>
+  </div>
+  <form >
+    <ion-list>
+      <ion-item class="border border-gray-300 rounded-full" lines="none">
+        <ion-input placeholder="Email"></ion-input>
+      </ion-item>
+      <ion-item class="border border-gray-300 rounded-full mt-2" lines="none">
+        <ion-input placeholder="Password"></ion-input>
+      </ion-item>
+    </ion-list>
+    <div class="flex justify-end pr-3">
+      <a routerLink="/resetpass" class="text-sm text-red-600">Forgot Password?</a>
+    </div>
+    <ion-row class="mt-2">
+      <ion-col>
+        <ion-button routerLink="/dashboard" class="btn_class" shape="round" color="danger" expand="block" type="submit">
+          Log In
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+</div>
