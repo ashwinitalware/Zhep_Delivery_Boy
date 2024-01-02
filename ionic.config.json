@@ -1,0 +1,7 @@
+{
+  "name": "Zhep_Delivery_Boy",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
