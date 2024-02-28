@@ -1,20 +1,20 @@
 <ion-content fullscreen>
-  <div style="background-color: red; height: 30%;">
-    <ion-grid>
-      <ion-row>
-        <ion-col size="3">
-          <div style="border-radius: 50%; margin-top: 10px; margin-left: 20px;">
-            <ion-img src="assets/evan.jpg" alt="Rahul Jograna" style="border-radius: 50%; height: 130%; width: 130%; overflow: hidden; margin-top: 30px; margin-left: 15px;"></ion-img>
-          </div>
-        </ion-col>
-        <ion-col size="9" style="margin-left: 40px; margin-right: -50px; margin-top: 20px;">
-          <h1 style="color: white; font-size: 20px;">Evan Salazar</h1>
-          <h5 style="color: white; font-size: 16px; margin-top: -5px;">evan&#64;initappz.com</h5>
-          <ion-button shape="round" color="light" style="margin-top: 0px; font-size: 11px; font-weight: bold;">Edit Profile</ion-button>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </div>
+  <div style="background-color: red;" class="p-3">
+    <ion-row>
+      <ion-col size="3">
+        <div class="flex items-center mt-5 pl-3">
+          <img class="w-20 h-20 rounded-full flex items-center" src="assets/evan.jpg" alt="">
+        </div>
+      </ion-col>
+      <ion-col size="9" style="margin-left: 40px; margin-right: -50px; margin-top: 20px;">
+        <h1  class="text-sm text-white">Evan Salazar</h1>
+
+        <h5 class="text-sm mt-1">evan&#64;initappz.com</h5>
+
+        <ion-button shape="round" color="light" style="font-size: 11px; font-weight: bold;" class="mt-2">Edit Profile</ion-button>
+      </ion-col>
+    </ion-row>
+</div>
 
   <div>
 
@@ -48,7 +48,7 @@
       <ion-icon name="chevron-forward-outline"></ion-icon>
     </ion-item>
 
-    <ion-item routerLink='/login' class='mt-3' style="margin-bottom: 20px;">
+    <ion-item  (click)="logout();" class='mt-3' style="margin-bottom: 20px;">
       <ion-icon name="power-outline" slot="start"></ion-icon>
       <ion-label>Logout</ion-label>
       <ion-icon name="chevron-forward-outline"></ion-icon>

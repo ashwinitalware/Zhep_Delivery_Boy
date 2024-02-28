@@ -1,4 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { DataService } from '../data.service';
+import { Storage } from '@ionic/storage-angular';
 
 @Component({
   selector: 'app-login',
@@ -6,10 +11,66 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
+  contact: any;
+  user_id1: any;
 
-  constructor() { }
+  session_data = {
+    contact: '',
+    password: '',
+  };
+  
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private storage: Storage,
+    public url: DataService
+  ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.storage.create();
   }
+
+  login_submit(f: NgForm) {
+    console.log(f.value);
+  
+    if (f.value.contact !== '' && f.value.password !== '') {
+      this.url.presentLoading();
+  
+      const requestData = {
+        contact: f.value.contact,
+        password: f.value.password
+      };
+  
+      this.http.post(`${this.url.serverUrl}delivery_check`, requestData).subscribe(
+        (res: any) => {
+          console.log(res);
+  
+          if (res.status === false) {
+            this.url.presentToast('User not Registered');
+          } else {
+            this.session_data['contact'] = res.user.id; // Update this line to access the correct user id property
+            this.storage.set('delivery', this.session_data);
+  
+            this.url.presentToast('Login Successfully');
+            this.router.navigate(['/dashboard']).then(() => {
+              this.dismissLoader(); // Dismiss the loader after navigation
+            });
+          }
+        },
+        (err) => {
+          this.dismissLoader();
+          // Handle the error case
+          // this.loader_visibility = false;
+          // this.func.presentToast("Server Error. Please try after some time.");
+        }
+      );
+    }
+  }
+  
+  dismissLoader() {
+    // Dismiss the loader here
+    this.url.dismiss();
+  }
+  
 
 }

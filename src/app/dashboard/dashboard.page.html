@@ -1,5 +1,5 @@
 <ion-header [translucent]="true">
-  <ion-toolbar color="primary">
+  <ion-toolbar color="dark">
     <ion-segment color="light" class="pl-1 pr-1" value="order" (ionChange)='segmentChanged($event)'>
       <ion-segment-button  value="order">
         <ion-label class="text-white text-xs">New Order</ion-label>
@@ -17,117 +17,103 @@
 <ion-content [fullscreen]="true">
   <div class="p-2">
     <div *ngIf="switchTab === 'order'" class="p-1">
+      <div class="border border-gray-300 rounded-md mt-3" *ngFor="let deliveryorder of alldeliveryorder">
+        <div class="p-2">
+         <div class="flex justify-between">
+          <p class="text-red-500 text-md mt-2 font-bold"> ITEMS</p>
+          <p class="text-black text-sm text-gray-500 mt-2"> #{{deliveryorder.order_id2}}</p>
 
-        <div class="border border-gray-300 rounded-md">
-          <div class="p-2">
-            <p class="text-red-500 text-md mt-2 font-bold"> ITEMS</p>
-      
-            <!-- Items Div -->
-            <div class="border-gray-300 border-dashed border-b">
-              <p class="text-black text-lg font-semibold mt-2">Chicken Biryani X 1</p>
-              <div class="flex justify-between">
-                <p>- Half</p>
-                <p>120 /-</p>
-              </div>
-            </div>
-      
-            <!-- Items Div -->
-            <div class="border-gray-300 border-dashed border-b mt-1">
-              <div class="flex justify-between">
-                <p class="text-black text-lg font-semibold mt-2">Mutton Biryani X 1</p>
-                <p>300 /-</p>
-              </div>
-            </div>
-      
-            <div class="flex justify-between mt-2">
-              <p class="text-gray-500 text-md mt-2"> TOTAL AMOUNT</p>
-              <p class="text-black font-semibold text-md mt-2"> 750.20</p>
+         </div>
+  
+          <!-- Items Div -->
+          <div class="border-gray-300 border-dashed border-b" *ngFor="let card of deliveryorder.item">
+            <div class="flex justify-between">
+              <p class="text-black text-lg font-semibold mt-2">{{card.recipe_name}} - Qty : {{card.quantity}}</p>
+              <p>{{card.recipe_price}} /-</p>
             </div>
           </div>
       
-          <div class="p-2">
-            <p class="text-red-500 font-bold text-md mt-2"> Address</p>
-      
-            <div class="mt-2 flex justify-start">
-              <div>
-                <p class="text-lg text-gray-500"> Pickup</p>
-                <p class="text-lg text-black">Railway Station, Badnera</p>
-              </div>
-            </div>
-      
-            <div class="mt-2 flex justify-start">
-              <div>
-                <p class="text-lg text-gray-500"> DropOff</p>
-                <p class="text-lg text-black">Sai Nivas, Dastur Nagar, Amravati</p>
-              </div>
-            </div>
+          <div class="flex justify-between mt-2 pr-1">
+            <p class="text-gray-500 text-md mt-2"> TOTAL AMOUNT</p>
+            <p class="text-black font-semibold text-md mt-2">{{deliveryorder.total}} /-</p>
           </div>
-      
-          <div class="p-2">
-            <p class="text-red-500 font-bold text-md mt-2"> USER DETAILS</p>
-      
-            <div class="mt-2 flex justify-between">
-              <div>
-                <p class="text-lg text-gray-500"> User Name :</p>
-              </div>
-              <div>
-                <p class="text-lg text-black">Ashwini Talware</p>
-              </div>
-            </div>
-      
-            <div class="mt-2 flex justify-between">
-              <div>
-                <p class="text-lg text-gray-500">Mobile Number :</p>
-              </div>
-              <div>
-                <p class="text-lg text-black">+91 78455125623</p>
-              </div>
-            </div>
-          </div>
-      
-          <ion-row>
-            <ion-col size="6">
-              <ion-button class="btn_class" size="small" color="success" expand="block">
-                Accept
-              </ion-button>
-            </ion-col>
-            <ion-col size="6">
-              <ion-button class="btn_class" color="danger" expand="block" fill="outline">
-                Reject
-              </ion-button>
-            </ion-col>
-          </ion-row>
         </div>
-
-      
+    
+        <div class="p-2">
+          <p class="text-red-500 font-bold text-md "> Address</p>
+    
+          <div class="mt-2 flex justify-start">
+            <div>
+              <p class="text-lg text-gray-500"> Pickup</p>
+              <p class="text-lg text-black">{{deliveryorder.pickup_address}}</p>
+            </div>
+          </div>
+    
+          <div class="mt-2 flex justify-start">
+            <div>
+              <p class="text-lg text-gray-500"> DropOff</p>
+              <p class="text-lg text-black">{{ deliveryorder.delivery_address.address_type }},
+                {{ deliveryorder.delivery_address.house_number }},
+                {{ deliveryorder.delivery_address.address }},
+                {{ deliveryorder.delivery_address.landmark }}</p>
+            </div>
+          </div>
+        </div>
+    
+        <div class="p-2" >
+          <p class="text-red-500 font-bold text-md mt-1"> USER DETAILS</p>
+    
+          <div class="mt-2 flex justify-between">
+            <div>
+              <p class="text-lg text-gray-500"> User Name :</p>
+            </div>
+            <div>
+              <p class="text-lg text-black">{{deliveryorder.delivery_address.full_name}}</p>
+            </div>
+          </div>
+    
+          <div class="mt-2 flex justify-between">
+            <div>
+              <p class="text-lg text-gray-500">Mobile Number :</p>
+            </div>
+            <div>
+              <p class="text-lg text-black">+91 {{deliveryorder.delivery_address.contact_number}}</p>
+            </div>
+          </div>
+        </div>
+    
+        <ion-row>
+          <ion-col size="6">
+            <ion-button class="btn_class" color="success" expand="block"  (click)="accept_table(deliveryorder['order_id2'])" >
+              Accept
+            </ion-button>
+          </ion-col>
+          <ion-col size="6">
+            <ion-button class="btn_class" color="danger" expand="block" fill="outline">
+              Reject
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </div>
     </div>
 
-
     <div *ngIf="switchTab === 'processing'" class="p-1">
-      <div class="border border-gray-300 rounded-md">
+      <div class="border border-gray-300 rounded-md" *ngFor="let deliveryorder of processingorder">
         <div class="p-2">
           <p class="text-red-500 text-md mt-2 font-bold"> ITEMS</p>
+          <p class="text-black text-sm text-gray-500 mt-2"> #{{deliveryorder.order_id2}}</p>
     
           <!-- Items Div -->
-          <div class="border-gray-300 border-dashed border-b">
-            <p class="text-black text-lg font-semibold mt-2">Chicken Biryani X 1</p>
+          <div class="border-gray-300 border-dashed border-b" *ngFor="let card of deliveryorder.item">
             <div class="flex justify-between">
-              <p>- Half</p>
-              <p>120 /-</p>
+              <p class="text-black text-lg font-semibold mt-2">{{card.recipe_name}} - Qty : {{card.quantity}}</p>
+              <p>{{card.recipe_price}} /-</p>
             </div>
           </div>
-    
-          <!-- Items Div -->
-          <div class="border-gray-300 border-dashed border-b mt-1">
-            <div class="flex justify-between">
-              <p class="text-black text-lg font-semibold mt-2">Mutton Biryani X 1</p>
-              <p>300 /-</p>
-            </div>
-          </div>
-    
+        
           <div class="flex justify-between mt-2">
             <p class="text-gray-500 text-md mt-2"> TOTAL AMOUNT</p>
-            <p class="text-black font-semibold text-md mt-2"> 750.20</p>
+            <p class="text-black font-semibold text-md mt-2">{{deliveryorder.total}} /-</p>
           </div>
         </div>
     
@@ -137,14 +123,17 @@
           <div class="mt-2 flex justify-start">
             <div>
               <p class="text-lg text-gray-500"> Pickup</p>
-              <p class="text-lg text-black">Railway Station, Badnera</p>
+              <p class="text-lg text-black">{{deliveryorder.pickup_address}}</p>
             </div>
           </div>
     
           <div class="mt-2 flex justify-start">
             <div>
               <p class="text-lg text-gray-500"> DropOff</p>
-              <p class="text-lg text-black">Sai Nivas, Dastur Nagar, Amravati</p>
+              <p class="text-lg text-black">{{ deliveryorder.delivery_address.address_type }},
+                {{ deliveryorder.delivery_address.house_number }},
+                {{ deliveryorder.delivery_address.address }},
+                {{ deliveryorder.delivery_address.landmark }}</p>
             </div>
           </div>
         </div>
@@ -157,7 +146,7 @@
               <p class="text-lg text-gray-500"> User Name :</p>
             </div>
             <div>
-              <p class="text-lg text-black">Ashwini Talware</p>
+              <p class="text-lg text-black">{{deliveryorder.delivery_address.full_name}}</p>
             </div>
           </div>
     
@@ -166,45 +155,65 @@
               <p class="text-lg text-gray-500">Mobile Number :</p>
             </div>
             <div>
-              <p class="text-lg text-black">+91 78455125623</p>
+              <p class="text-lg text-black">+91 {{deliveryorder.delivery_address.contact_number}}</p>
             </div>
           </div>
         </div>
     
         <div class="border-b border-gray-300 border-dashed mt-3"></div>
     
-        <div class="flex justify-between p-2">
+        <!-- <div class="flex justify-between p-2">
           <p class="text-black font-bold text-lg mt-2"> Status</p>
-          <p class="text-green-500 font-semibold text-md mt-2"> Ready to pickup</p>
-        </div>
+          <p class="text-green-500 font-semibold text-md mt-2"> {{deliveryorder.status}}</p>
+        </div> -->
+
+        <ion-row>
+          <ion-col size="12">
+            <div [style.backgroundColor]="getBackgroundColor(deliveryorder.status)" class="rounded-md" (click)="show_map()">
+              <div class="flex justify-between p-3">
+                <p class="text-sm text-white flex items-center">{{ deliveryorder.status }}</p>
+                <p class="border border-white rounded-full text-xs p-1 text-white">View Map</p>
+              </div>
+            </div>
+          </ion-col>
+          <ion-col size="12">
+            <div  class="rounded-md bg-blue-600" (click)="pickup_table(deliveryorder['order_id2'])">
+              <div class="flex justify-center p-3">
+                <p class="  text-sm p-1 text-white">  Order Pickup</p>
+              </div>
+            </div>
+          
+          </ion-col>
+
+          <!-- <ion-col size="6">
+            <ion-button class="btn_class" color="tertiary" expand="block"  (click)="pickup_table(deliveryorder['order_id2'])" >
+             Order Pickup
+            </ion-button>
+          </ion-col> -->
+
+
+       
+        </ion-row>
       </div>
     </div>
 
     <div *ngIf="switchTab === 'completed'" class="p-1">
-        <div class="border border-gray-300 rounded-md">
+        <div class="border border-gray-300 rounded-md" *ngFor="let deliveryorder of completedorder">
           <div class="p-2">
             <p class="text-red-500 text-md mt-2 font-bold"> ITEMS</p>
+            <p class="text-black text-sm text-gray-500 mt-2"> #{{deliveryorder.order_id2}}</p>
       
             <!-- Items Div -->
-            <div class="border-gray-300 border-dashed border-b">
-              <p class="text-black text-lg font-semibold mt-2">Chicken Biryani X 1</p>
+            <div class="border-gray-300 border-dashed border-b" *ngFor="let card of deliveryorder.item">
               <div class="flex justify-between">
-                <p>- Half</p>
-                <p>120 /-</p>
+                <p class="text-black text-lg font-semibold mt-2">{{card.recipe_name}} - Qty : {{card.quantity}}</p>
+                <p>{{card.recipe_price}} /-</p>
               </div>
             </div>
-      
-            <!-- Items Div -->
-            <div class="border-gray-300 border-dashed border-b mt-1">
-              <div class="flex justify-between">
-                <p class="text-black text-lg font-semibold mt-2">Mutton Biryani X 1</p>
-                <p>300 /-</p>
-              </div>
-            </div>
-      
+          
             <div class="flex justify-between mt-2">
               <p class="text-gray-500 text-md mt-2"> TOTAL AMOUNT</p>
-              <p class="text-black font-semibold text-md mt-2"> 750.20</p>
+              <p class="text-black font-semibold text-md mt-2">{{deliveryorder.total}} /-</p>
             </div>
           </div>
       
@@ -214,14 +223,17 @@
             <div class="mt-2 flex justify-start">
               <div>
                 <p class="text-lg text-gray-500"> Pickup</p>
-                <p class="text-lg text-black">Railway Station, Badnera</p>
+                <p class="text-lg text-black">{{deliveryorder.pickup_address}}</p>
               </div>
             </div>
       
             <div class="mt-2 flex justify-start">
               <div>
                 <p class="text-lg text-gray-500"> DropOff</p>
-                <p class="text-lg text-black">Sai Nivas, Dastur Nagar, Amravati</p>
+                <p class="text-lg text-black">{{ deliveryorder.delivery_address.address_type }},
+                  {{ deliveryorder.delivery_address.house_number }},
+                  {{ deliveryorder.delivery_address.address }},
+                  {{ deliveryorder.delivery_address.landmark }}</p>
               </div>
             </div>
           </div>
@@ -234,7 +246,7 @@
                 <p class="text-lg text-gray-500"> User Name :</p>
               </div>
               <div>
-                <p class="text-lg text-black">Ashwini Talware</p>
+                <p class="text-lg text-black">{{deliveryorder.delivery_address.full_name}}</p>
               </div>
             </div>
       
@@ -243,7 +255,7 @@
                 <p class="text-lg text-gray-500">Mobile Number :</p>
               </div>
               <div>
-                <p class="text-lg text-black">+91 78455125623</p>
+                <p class="text-lg text-black">+91 {{deliveryorder.delivery_address.contact_number}}</p>
               </div>
             </div>
           </div>
@@ -252,14 +264,23 @@
       
           <div class="flex justify-between p-2">
             <p class="text-black font-bold text-lg mt-2"> Status</p>
-            <p class="text-red-500 font-semibold text-md mt-2"> Order is Delivered</p>
+            <p class="text-green-500 font-semibold text-md mt-2"> {{deliveryorder.status}}</p>
           </div>
-        </div>
-
-      
+  
+          <ion-row>
+            <ion-col size="6">
+              <ion-button class="btn_class" color="tertiary" expand="block"  (click)="delivered_table(deliveryorder['order_id2'])" >
+               Order Deliverd
+              </ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button class="btn_class" color="tertiary" expand="block" >
+              View Map
+              </ion-button>
+            </ion-col>
+          </ion-row>
     </div>
-
-  </div>
+  </div></div>
 </ion-content>
 
 <ion-footer>

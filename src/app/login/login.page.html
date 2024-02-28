@@ -1,28 +1,35 @@
 <div class="p-4">
-  <div class="flex justify-center logo mt-10">
-    <img width="120" height="120" src="assets/icon1.png" alt="Logo" />
+  <div style="margin-top: 20%;">
+  
+  
+    <form #form_login="ngForm" style="margin-top: -15%;">
+      <div class="p-4" >
+        <div align="center" class="flex justify-center logo mt-10">
+          <img width=120 height=120 src="assets/icon1.png" />
+        </div>
+        <div align="center" class="flex justify-center mt-3">
+          <p class="text-lg text-black">Enter your login details</p>
+        </div>
+        <ion-list class="p-2">
+  
+          <ion-item class="border border-gray-300 rounded-full p-1" lines="none">
+            <ion-input  
+              type="number" name="contact" value="contact" ngModel  class="input" placeholder="Mobile Number"></ion-input>
+          </ion-item>
+  
+          <ion-item class="border border-gray-300 rounded-full mt-2 p-1" lines="none">
+            <ion-input  type="text" name="password" value="password" ngModel  class="input" placeholder="Password"></ion-input>
+          </ion-item>
+        </ion-list>
+        <ion-row>
+          <ion-col size="12" (click)="login_submit(form_login)">
+            <ion-button class="btn_class" shape="round" color="danger" expand="block">Login</ion-button>
+          </ion-col>
+        </ion-row>
+      </div>
+  
+     
+    </form>
   </div>
-  <div class="flex justify-center mt-3">
-    <p class="text-lg text-black">Enter your login details</p>
-  </div>
-  <form >
-    <ion-list>
-      <ion-item class="border border-gray-300 rounded-full" lines="none">
-        <ion-input placeholder="Email"></ion-input>
-      </ion-item>
-      <ion-item class="border border-gray-300 rounded-full mt-2" lines="none">
-        <ion-input placeholder="Password"></ion-input>
-      </ion-item>
-    </ion-list>
-    <div class="flex justify-end pr-3">
-      <a routerLink="/resetpass" class="text-sm text-red-600">Forgot Password?</a>
-    </div>
-    <ion-row class="mt-2">
-      <ion-col>
-        <ion-button routerLink="/dashboard" class="btn_class" shape="round" color="danger" expand="block" type="submit">
-          Log In
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </form>
+  
 </div>
