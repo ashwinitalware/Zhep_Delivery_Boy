@@ -35,6 +35,10 @@ const routes: Routes = [
     path: 'profile',
     loadChildren: () => import('./profile/profile.module').then( m => m.ProfilePageModule)
   },
+  {
+    path: 'show-map',
+    loadChildren: () => import('./show-map/show-map.module').then( m => m.ShowMapPageModule)
+  },
 ];
 
 @NgModule({

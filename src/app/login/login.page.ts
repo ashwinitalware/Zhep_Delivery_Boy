@@ -47,6 +47,7 @@ export class LoginPage implements OnInit {
   
           if (res.status === false) {
             this.url.presentToast('User not Registered');
+            this.dismissLoader();
           } else {
             this.session_data['contact'] = res.user.id; // Update this line to access the correct user id property
             this.storage.set('delivery', this.session_data);
