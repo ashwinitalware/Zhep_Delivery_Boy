@@ -22,6 +22,8 @@ export class DashboardPage implements OnInit {
   session_data1: any;
   processingorder: any[] = [];
   completedorder: any;
+  address: any;
+  lat_lan: any;
 
   constructor(
     public url: DataService,
@@ -65,6 +67,12 @@ export class DashboardPage implements OnInit {
   ionViewWillEnter() {
     this.url.presentLoading();
     this.get_delivery_order();
+
+    this.address = this.url.user_map_address;
+    this.lat_lan=this.url.user_map_lat + ',' + this.url.user_map_lan;
+    setTimeout(() => {
+    // this.loader_visible = false;
+    },2200)
     this.url.dismiss();
   }
 
@@ -288,39 +296,37 @@ export class DashboardPage implements OnInit {
       this.completedorder.push(deliveredOrder);
     }
   }
+  // async show_map1() {
+  //   this.router.navigate(['show-map']);
+  // }
 
+  
+  // show_map_new(pickupAddress: string) {
+  //   // Pass pickupAddress as a query parameter
+  //   this.router.navigate(['/show-map'], { queryParams: { address: pickupAddress } });
+  // }
 
-  show_map1(pickupAddress: string) {
-    Geolocation.getCurrentPosition().then((position) => {
-      const currentLocation = `${position.coords.latitude},${position.coords.longitude}`;
-      const url = `https://www.google.com/maps/dir/?api=1&origin=${currentLocation}&destination=${encodeURIComponent(pickupAddress)}`;
-      window.open(url, '_blank');
-    }).catch((error) => {
-      console.error('Error getting current position:', error);
-    });
+  // // Method to navigate to map-page with delivery address
+  // show_map(deliveryAddress: any) {
+  //   if (typeof deliveryAddress === 'string') {
+  //     deliveryAddress = JSON.parse(deliveryAddress);
+  //   }
+  //   const address = deliveryAddress.address_type + ', ' + deliveryAddress.house_number + ', ' + deliveryAddress.address + ', ' + deliveryAddress.landmark;
+  //   this.router.navigate(['/show-map'], { queryParams: { address: address } });
+  //   alert(address);
+  // }
+  
+  show_map_new(pickupAddress: string) {
+    this.router.navigate(['/show-map'], { queryParams: { address: pickupAddress, type: 'pickup' } });
   }
-
-    
-  show_map(pickupAddress: string) {
-    Geolocation.getCurrentPosition().then((position) => {
-      const currentLocation = `${position.coords.latitude},${position.coords.longitude}`;
-      this.router.navigate(['show-map', { pickupAddress, currentLocation }]);
-    }).catch(error => {
-      console.error('Error getting current position:', error);
-      // Handle error here
-    });
+  
+  show_map(deliveryAddress: any) {
+    if (typeof deliveryAddress === 'string') {
+      deliveryAddress = JSON.parse(deliveryAddress);
+    }
+    const address = deliveryAddress.address_type + ', ' + deliveryAddress.house_number + ', ' + deliveryAddress.address + ', ' + deliveryAddress.landmark;
+    this.router.navigate(['/show-map'], { queryParams: { address: address, type: 'delivery' } });
   }
-
-  show_map_dropoff(address: string) {
-    Geolocation.getCurrentPosition().then((position) => {
-      const currentLocation = `${position.coords.latitude},${position.coords.longitude}`;
-      const url = `https://www.google.com/maps/dir/?api=1&origin=${currentLocation}&destination=${encodeURIComponent(address)}`;
-      window.open(url, '_blank');
-    }).catch((error) => {
-      console.error('Error getting current position:', error);
-    });
-  }
-
 
   cancel_table(order_id2: any) {
     this.storage.get('delivery').then((res1) => {

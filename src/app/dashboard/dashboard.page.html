@@ -1,4 +1,6 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="true"><ion-toolbar color="dark" align="center">
+  Delivery
+</ion-toolbar>
   <ion-toolbar color="dark">
     <ion-segment color="light" class="pl-1 pr-1" value="order" (ionChange)='segmentChanged($event)'>
       <ion-segment-button value="order">
@@ -19,15 +21,19 @@
     <div *ngIf="switchTab === 'order'" class="p-1 mt-2">
       <div class="border border-gray-300 rounded-md mt-3" *ngFor="let deliveryorder of alldeliveryorder">
         <div class="p-2">
+
+          <div>
+            <p>Hotel Name</p>
+            <p>address</p>
+          </div>
+
           <div class="flex justify-between">
             <p class="text-red-500 text-md mt-2 font-bold"> ITEMS</p>
             <p class="text-black text-sm text-gray-500 mt-2"> #{{deliveryorder.order_id2}}</p>
-
           </div>
 
           <!-- Items Div -->
           <div class="border-gray-300 border-dashed border-b" *ngFor="let card of deliveryorder.item">
-
             <div class="flex justify-between">
               <p class="text-black text-lg font-semibold mt-2">{{card.index}}. {{card.recipe_name}} - Qty :
                 {{card.quantity}}</p>
@@ -70,19 +76,16 @@
 
           <div class="mt-2 flex justify-between">
             <div>
-              <p class="text-lg text-gray-500"> User Name :</p>
+              <p class="text-lg text-gray-500"> {{deliveryorder.delivery_address.full_name}}</p>
             </div>
             <div>
-              <p class="text-lg text-black">{{deliveryorder.delivery_address.full_name}}</p>
+              <p class="text-lg text-black"><ion-icon name="call"></ion-icon></p>
             </div>
           </div>
 
           <div class="mt-2 flex justify-between">
             <div>
-              <p class="text-lg text-gray-500">Mobile Number :</p>
-            </div>
-            <div>
-              <p class="text-lg text-black">+91 {{deliveryorder.contact_number}}</p>
+              <p class="text-lg text-gray-500">+91 {{deliveryorder.contact_number}}</p>
             </div>
           </div>
         </div>
@@ -105,6 +108,12 @@
 
     <div *ngIf="switchTab === 'processing'" class="p-1 mt-2">
       <div class="border border-gray-300 rounded-md  mt-2" *ngFor="let deliveryorder of processingorder">
+        <div class="p-2">
+          <p class="text-black text-lg font-semibold">{{deliveryorder.restro_name}}</p>
+          <p class="text-gray-400 text-xs mb-1 mt-1">{{deliveryorder.restro_contact_no
+          }}</p>
+        </div>
+
         <div class="p-2">
           <p class="text-red-500 text-md mt-2 font-bold"> ITEMS</p>
           <p class="text-black text-sm text-gray-500 mt-2"> #{{deliveryorder.order_id2}}</p>
@@ -150,25 +159,19 @@
         </div>
 
         <div class="p-2">
-          <p class="text-red-500 font-bold text-md mt-2"> USER DETAILS</p>
+          <p class="text-red-500 font-bold text-md mt-1"> USER DETAILS</p>
 
           <div class="mt-2 flex justify-between">
             <div>
-              <p class="text-lg text-gray-500"> User Name :</p>
+              <p class="text-lg text-gray-500"> {{deliveryorder.delivery_address.full_name}}</p>
+              <p class="text-lg text-gray-500">+91 {{deliveryorder.contact_number}}</p>
             </div>
-            <div>
-              <p class="text-lg text-black">{{deliveryorder.delivery_address.full_name}}</p>
+            <div align="center">
+              <p class="text-lg text-red-600 mt-1 pr-2"><ion-icon name="call"></ion-icon></p>
             </div>
           </div>
 
-          <div class="mt-2 flex justify-between">
-            <div>
-              <p class="text-lg text-gray-500">Mobile Number :</p>
-            </div>
-            <div>
-              <p class="text-lg text-black">+91 {{deliveryorder.contact_number}}</p>
-            </div>
-          </div>
+       
         </div>
 
         <div class="border-b border-gray-300 border-dashed mt-3"></div>
@@ -181,8 +184,8 @@
               <div class="flex justify-between p-3">
                 <p class="text-sm text-white flex items-center">{{ deliveryorder.status }}</p>
                 <p class="border border-white rounded-full text-xs p-1 text-white"
-                  (click)="show_map(deliveryorder.pickup_address)">View Map</p>
-                  <!-- (click)="show_map(deliveryorder.pickup_address)" -->
+                  (click)="show_map_new(deliveryorder.pickup_address)">View Map</p>
+
               </div>
             </div>
           </ion-col>
@@ -195,19 +198,20 @@
           </ion-col>
         </ion-row>
 
+        <!-- Second Row (Ready for Delivery) -->
         <ion-row *ngIf="deliveryorder.status === 'Ready for Delivery'">
           <ion-col size="12">
             <div [style.backgroundColor]="getBackgroundColor(deliveryorder.status)" class="rounded-md">
               <div class="flex justify-between p-3">
                 <p class="text-sm text-white flex items-center">{{ deliveryorder.status }}</p>
                 <p class="border border-white rounded-full text-xs p-1 text-white"
-                (click)="show_map(deliveryorder.pickup_address)" >View Map</p>
-                <!-- (click)="show_map_dropoff(deliveryorder.delivery_address)" -->
+                  (click)="show_map(deliveryorder.delivery_address)">View Map</p>
               </div>
             </div>
           </ion-col>
           <ion-col size="12">
-            <div class="rounded-md border-2 border-black bg-gray-50" id="open-modal" (click)="send_delivery_otp(deliveryorder['order_id2'])">
+            <div class="rounded-md border-2 border-black bg-gray-50" id="open-modal"
+              (click)="send_delivery_otp(deliveryorder['order_id2'])">
               <div class="flex justify-center p-2">
                 <p class="text-sm text-black flex items-center"> Order Delivered </p>
               </div>
@@ -226,9 +230,11 @@
                   </ion-toolbar>
                   <ion-list class="p-4">
                     <ion-item class="border border-gray-300 rounded-full p-1" lines="none">
-                      <ion-input type="number" name="otp" [(ngModel)]="otp" class="input" placeholder="Enter OTP"></ion-input>
+                      <ion-input type="number" name="otp" [(ngModel)]="otp" class="input"
+                        placeholder="Enter OTP"></ion-input>
                     </ion-item>
-                    <p class="text-center rounded-full p-4 w-full bg-black text-white mt-3" (click)="verify_delivery_otp(deliveryorder['order_id2'], otp)">
+                    <p class="text-center rounded-full p-4 w-full bg-black text-white mt-3"
+                      (click)="verify_delivery_otp(deliveryorder['order_id2'], otp)">
                       Verify
                     </p>
                   </ion-list>
@@ -238,17 +244,16 @@
           </div>
         </ion-row>
 
-        <ion-row
-        *ngIf="deliveryorder.status === 'Order Delivered'">
-        <ion-col size="12">
-          <div [style.backgroundColor]="getBackgroundColor(deliveryorder.status)" class="rounded-md">
-            <div class="flex justify-center p-3">
-              <p class="text-sm text-white flex items-center">{{ deliveryorder.status }}</p>
-             
+        <ion-row *ngIf="deliveryorder.status === 'Order Delivered'">
+          <ion-col size="12">
+            <div [style.backgroundColor]="getBackgroundColor(deliveryorder.status)" class="rounded-md">
+              <div class="flex justify-center p-3">
+                <p class="text-sm text-white flex items-center">{{ deliveryorder.status }}</p>
+
+              </div>
             </div>
-          </div>
-        </ion-col>
-      </ion-row>
+          </ion-col>
+        </ion-row>
       </div>
     </div>
 
@@ -299,23 +304,20 @@
         </div>
 
         <div class="p-2">
-          <p class="text-red-500 font-bold text-md mt-2"> USER DETAILS</p>
+          <p class="text-red-500 font-bold text-md mt-1"> USER DETAILS</p>
 
           <div class="mt-2 flex justify-between">
             <div>
-              <p class="text-lg text-gray-500"> User Name :</p>
+              <p class="text-lg text-gray-500"> {{deliveryorder.delivery_address.full_name}}</p>
             </div>
             <div>
-              <p class="text-lg text-black">{{deliveryorder.delivery_address.full_name}}</p>
+              <p class="text-lg text-black"><ion-icon name="call"></ion-icon></p>
             </div>
           </div>
 
           <div class="mt-2 flex justify-between">
             <div>
-              <p class="text-lg text-gray-500">Mobile Number :</p>
-            </div>
-            <div>
-              <p class="text-lg text-black">+91 {{deliveryorder.delivery_address.contact_number}}</p>
+              <p class="text-lg text-gray-500">+91 {{deliveryorder.contact_number}}</p>
             </div>
           </div>
         </div>

@@ -1,0 +1,16 @@
+// .map {
+//     height: 100%;
+//     width: auto;
+// }
+.map {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .button-container {
+    position: absolute;
+    top: 16px; /* Adjust the top position */
+    left: 16px; /* Adjust the left position */
+    z-index: 9999; /* Ensure buttons are above the map */
+  }
+  

@@ -13,12 +13,12 @@ import { App } from '@capacitor/app';
 })
 export class AppComponent {
   Contact_No: any;
+  Restro_Name: any;
   cust_id1: any;
   user_id1: any;
   dataService: any;
-  Restro_Name: any;
-
-
+  name: any;
+  contact: any;
 
   constructor(
     public url: DataService,
@@ -48,7 +48,7 @@ export class AppComponent {
           this.cust_id1 !== undefined
         ) {
           //alert(this.cust_id1);
-          this.router.navigate(['/dashboard']);         
+          this.router.navigate(['/dashboard']);
         } else {
           this.router.navigate(['/login']);
         }
@@ -117,12 +117,13 @@ export class AppComponent {
   }
 
   logout() {
-        this.storage.remove('delivery').then(() => {
+    this.storage.remove('delivery').then(() => {
       this.storage.clear();
       this.router.navigateByUrl('/login');
     });
     this.url.presentToast('Logout Successfully.');
   }
+
 
   get_delivery_info() {
     this.storage.get('delivery').then((res1) => {
@@ -138,8 +139,8 @@ export class AppComponent {
               this.url.presentToast('You Have no Profile.');
             } else {
               console.log(res);
-              // this.Restro_Name = res.data[0].Restro_Name;
-              // this.Contact_No = res.data[0].Contact_No;
+              this.Restro_Name = res.data[0].Restro_Name;
+              this.Contact_No = res.data[0].Contact_No;
             }
           },
           (err) => {
@@ -147,5 +148,5 @@ export class AppComponent {
         );
     });
   }
- 
+
 }

@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title style="color:#fff">Choose delivery location</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="tertiary">
+  <div #mapElement class="map"></div>
+  <div class="button-container">
+    <ion-button expand="block" (click)="navigateToGoogleMaps('pickup')">Pick Up</ion-button>
+    <ion-button expand="block" (click)="navigateToGoogleMaps('dropoff')">Drop Off</ion-button>
+  </div>
+</ion-content>
