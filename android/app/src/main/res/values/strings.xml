@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">Zhep_Delivery_Boy</string>
     <string name="title_activity_main">Zhep_Delivery_Boy</string>
-    <string name="package_name">io.ionic.starter</string>
-    <string name="custom_url_scheme">io.ionic.starter</string>
+    <string name="package_name">io.zhepdelivery.com</string>
+    <string name="custom_url_scheme">io.zhepdelivery.com</string>
 </resources>

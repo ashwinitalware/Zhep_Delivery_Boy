@@ -75,7 +75,15 @@ export class DashboardPage implements OnInit {
     },2200)
     this.url.dismiss();
   }
-
+ 
+  callPhoneNumber(phoneNumber: string) {
+    if (phoneNumber) {
+      window.location.href = 'tel:' + phoneNumber;
+    } else {
+      console.error('Phone number not provided');
+    }
+  }
+  
   get_delivery_order() {
     this.http.get(`${this.url.serverUrl}get_delivery_order?`).subscribe(
       (res: any) => {
