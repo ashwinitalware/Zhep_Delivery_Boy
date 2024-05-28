@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import { Geolocation } from '@capacitor/geolocation';
 
@@ -31,7 +31,8 @@ export class DashboardPage implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private storage: Storage,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private toastController: ToastController
   ) { }
 
   async ngOnInit() {
@@ -382,37 +383,46 @@ export class DashboardPage implements OnInit {
     });
   }
 
-  verify_delivery_otp(order_id2: any, otp: number) {
+  async verify_delivery_otp(order_id2: any, otp: number) {
     if (!otp) {
       this.url.presentToast('Please Fill OTP.');
       return;
     }
-    this.url.presentLoading();
+  
     const data = {
       order_id2: order_id2,
       otp: otp
     };
-
+  
     this.http.post(`${this.url.serverUrl}verify_delivery_otp`, data)
       .subscribe(
-        (res: any) => {
+        async (res: any) => {
           console.log(res, 89);
           if (res.status) {
             console.log(res, 88);
             this.deliveryorder.status = 'Order Delivered';
-            this.url.dismiss();
-            // this.router.navigate(['/location']);
+            this.url.dismiss(); 
+            await this.presentToast(res.message); // Display toast with response message
           } else {
-            this.url.dismiss();
+            this.url.dismiss()  
             this.url.presentToast('Invalid OTP');
           }
         },
-        (err) => {
+        async (err) => {
           this.url.dismiss();
-          this.url.presentToast('Error verifying OTP.');
+          await this.presentToast('Error verifying OTP.');
         }
       );
   }
+  
+  async presentToast(message: string) {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000 // Toast duration in milliseconds
+    });
+    toast.present();
+  }
+  
 
 
 

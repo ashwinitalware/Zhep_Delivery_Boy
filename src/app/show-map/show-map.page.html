@@ -28,10 +28,26 @@
  
     <div #mapElement class="map"></div>
 
-    <div class="button-container">
-      <ion-button expand="block" shape="round" (click)="navigateToGoogleMaps('pickup')">Pick Up</ion-button>
-      <ion-button expand="block" shape="round" (click)="navigateToGoogleMaps('pickup')">Drop Off</ion-button>
-    </div>
+    <div style="z-index: 10000; position: absolute; top: 16px; width: 100%; display: flex; justify-content: flex-end;">
+      <button class="bg-red-600 text-white p-1 text-xs rounded-full p-1 w-auto pl-2 pr-2" (click)="navigateToGoogleMaps('pickup')">time</button>
+
+      <button class="bg-red-600 text-white p-1 text-xs rounded-full p-1 w-auto pl-2 pr-2" (click)="navigateToGoogleMaps('pickup')">Pick-Up</button>
+    &nbsp;  <button class="bg-red-600 text-white p-1 text-xs rounded-full p-1 w-auto pl-2 pr-2" (click)="navigateToGoogleMaps('pickup')">Drop-Of</button>&nbsp;
+  </div>
+
+
+   <!-- <ion-row style="z-index: 10000; position: absolute; top: 16px;">
+    
+    <ion-col size="12">
+      <button class="bg-red-600 text-white p-1 text-xs rounded-full p-1 w-full pl-2 pr-2" (click)="navigateToGoogleMaps('pickup')">Pick-Up</button>
+        <!-- <ion-button expand="block" shape="round"  (click)="navigateToGoogleMaps('pickup')">Pick Up</ion-button> 
+    </ion-col>
+    <ion-col size="12">
+      <button class="bg-red-600 text-white p-1 text-xs rounded-full p-1 w-full pl-2 pr-2" (click)="navigateToGoogleMaps('pickup')">Drop-Off</button>
+
+        <!-- <ion-button expand="block" shape="round" (click)="navigateToGoogleMaps('pickup')">Drop Off</ion-button> 
+    </ion-col>
+   </ion-row> -->
     
     <div class="address_main_div">
       <ion-row class="pl-2 pr-2">
