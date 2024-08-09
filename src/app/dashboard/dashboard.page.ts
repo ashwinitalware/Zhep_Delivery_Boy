@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { DataService } from '../data.service';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, IonModal, ToastController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import { Geolocation } from '@capacitor/geolocation';
 
@@ -13,6 +13,8 @@ declare const google: any;
   styleUrls: ['./dashboard.page.scss'],
 })
 export class DashboardPage implements OnInit {
+  currentLocation: { lat: number, lon: number } = { lat: 0, lon: 0 };
+  @ViewChild('modalTrigger', { static: true }) modalTrigger!: IonModal;
   otp: any;
   deliveryorder: any;
   isDataLoaded: boolean = false;
@@ -24,6 +26,7 @@ export class DashboardPage implements OnInit {
   completedorder: any;
   address: any;
   lat_lan: any;
+  updateInterval: any;
 
   constructor(
     public url: DataService,
@@ -37,9 +40,29 @@ export class DashboardPage implements OnInit {
 
   async ngOnInit() {
     await this.storage.create();
+    this.getCurrentLocation();
+    this.startUpdatingLocation();
+  }
+
+  ngOnDestroy() {
+    // Clear the interval when the component is destroyed
+    this.stopUpdatingLocation();
+  }
+
+  startUpdatingLocation() {
+    this.updateInterval = setInterval(() => {
+      this.getCurrentLocation();
+    }, 30000); // 30000 ms = 30 seconds
+  }
+
+  stopUpdatingLocation() {
+    if (this.updateInterval) {
+      clearInterval(this.updateInterval);
+    }
   }
 
   table_accepted = {
+    delivery_boy_id: '',
     order_id: '',
   };
 
@@ -69,12 +92,22 @@ export class DashboardPage implements OnInit {
     this.url.presentLoading();
     this.get_delivery_order();
 
+
     this.address = this.url.user_map_address;
     this.lat_lan=this.url.user_map_lat + ',' + this.url.user_map_lan;
+    
     setTimeout(() => {
     // this.loader_visible = false;
     },2200)
     this.url.dismiss();
+  }
+
+  callPhoneNumberrestro(phoneNumber: string) {
+    if (phoneNumber) {
+      window.location.href = 'tel:' + phoneNumber;
+    } else {
+      console.error('Phone number not provided');
+    }
   }
  
   callPhoneNumber(phoneNumber: string) {
@@ -146,7 +179,11 @@ export class DashboardPage implements OnInit {
   accept_table(order_id2: any) {
     this.storage.get('delivery').then((res1) => {
       this.user_id1 = parseInt(res1.delivery_id, 10);
+
       this.table_accepted['order_id'] = order_id2;
+      this.table_accepted['delivery_boy_id'] = this.user_id1;
+
+      // this.table_accepted['user_id'] = this.user_id1;
       this.url.presentLoading();
       this.http.post(`${this.url.serverUrl}delivery_accept_order`, this.table_accepted)
         .subscribe(
@@ -305,25 +342,7 @@ export class DashboardPage implements OnInit {
       this.completedorder.push(deliveredOrder);
     }
   }
-  // async show_map1() {
-  //   this.router.navigate(['show-map']);
-  // }
 
-  
-  // show_map_new(pickupAddress: string) {
-  //   // Pass pickupAddress as a query parameter
-  //   this.router.navigate(['/show-map'], { queryParams: { address: pickupAddress } });
-  // }
-
-  // // Method to navigate to map-page with delivery address
-  // show_map(deliveryAddress: any) {
-  //   if (typeof deliveryAddress === 'string') {
-  //     deliveryAddress = JSON.parse(deliveryAddress);
-  //   }
-  //   const address = deliveryAddress.address_type + ', ' + deliveryAddress.house_number + ', ' + deliveryAddress.address + ', ' + deliveryAddress.landmark;
-  //   this.router.navigate(['/show-map'], { queryParams: { address: address } });
-  //   alert(address);
-  // }
   
   show_map_new(pickupAddress: string) {
     this.router.navigate(['/show-map'], { queryParams: { address: pickupAddress, type: 'pickup' } });
@@ -334,7 +353,7 @@ export class DashboardPage implements OnInit {
       deliveryAddress = JSON.parse(deliveryAddress);
     }
     const address = deliveryAddress.address_type + ', ' + deliveryAddress.house_number + ', ' + deliveryAddress.address + ', ' + deliveryAddress.landmark;
-    this.router.navigate(['/show-map'], { queryParams: { address: address, type: 'delivery' } });
+    this.router.navigate(['/map-page'], { queryParams: { address: address, type: 'delivery' } });
   }
 
   cancel_table(order_id2: any) {
@@ -364,6 +383,7 @@ export class DashboardPage implements OnInit {
     }
   }
 
+
   send_delivery_otp(order_id2: any) {
     this.storage.get('delivery').then((res1) => {
       this.user_id1 = parseInt(res1.delivery_id, 10);
@@ -388,32 +408,150 @@ export class DashboardPage implements OnInit {
       this.url.presentToast('Please Fill OTP.');
       return;
     }
-  
+
     const data = {
       order_id2: order_id2,
       otp: otp
     };
-  
+
     this.http.post(`${this.url.serverUrl}verify_delivery_otp`, data)
       .subscribe(
         async (res: any) => {
-          console.log(res, 89);
           if (res.status) {
-            console.log(res, 88);
             this.deliveryorder.status = 'Order Delivered';
-            this.url.dismiss(); 
-            await this.presentToast(res.message); // Display toast with response message
+            await this.url.presentToast(res.message); 
+            
+            // Close the modal
+            if (this.modalTrigger) {
+              await this.modalTrigger.dismiss();
+            }
           } else {
-            this.url.dismiss()  
-            this.url.presentToast('Invalid OTP');
+            await this.url.presentToast(res.message);
           }
         },
         async (err) => {
-          this.url.dismiss();
-          await this.presentToast('Error verifying OTP.');
+          await this.url.presentToast('Error verifying OTP.');
         }
       );
   }
+
+
+  // async verify_delivery_otp(order_id2: any, otp: number) {
+  //   if (!otp) {
+  //     this.url.presentToast('Please Fill OTP.');
+  //     return;
+  //   }
+  
+  //   const data = {
+  //     order_id2: order_id2,
+  //     otp: otp
+  //   };
+  
+  //   this.http.post(`${this.url.serverUrl}verify_delivery_otp`, data)
+  //     .subscribe(
+  //       async (res: any) => {
+  //         if (res.status) {
+  //           this.deliveryorder.status = 'Order Delivered';
+  //           await this.url.presentToast(res.message); 
+            
+  //           // Close the modal
+  //           if (this.modal) {
+  //             await this.modal.dismiss();
+  //           }
+  //         } else {
+  //           await this.url.presentToast(res.message);
+  //         }
+  //       },
+  //       async (err) => {
+  //         await this.url.presentToast('Error verifying OTP.');
+  //       }
+  //     );
+  // }
+
+
+  // send_delivery_otp(order_id2: any) {
+  //   this.storage.get('delivery').then((res1) => {
+  //     this.user_id1 = parseInt(res1.delivery_id, 10);
+  //     this.send_delivered['order_id2'] = order_id2;
+  //     this.url.presentLoading();
+  //     this.http.post(`${this.url.serverUrl}send_delivery_otp`, this.send_delivered)
+  //       .subscribe(
+  //         (res: any) => {
+  //           console.log(res);
+  //           this.url.dismiss();
+  //         },
+  //         (err) => {
+  //           this.url.presentToast('Error updating order status.');
+  //           this.url.dismiss();
+  //         }
+  //       );
+  //   });
+  // }
+
+  // async verify_delivery_otp(order_id2: any, otp: number) {
+  //   if (!otp) {
+  //     this.url.presentToast('Please Fill OTP.');
+  //     return;
+  //   }
+  
+  //   const data = {
+  //     order_id2: order_id2,
+  //     otp: otp
+  //   };
+  
+  //   this.http.post(`${this.url.serverUrl}verify_delivery_otp`, data)
+  //     .subscribe(
+  //       async (res: any) => {
+  //         if (res.status) {
+  //           this.deliveryorder.status = 'Order Delivered';
+  //           await this.url.presentToast(res.message); 
+  //           const modal = await document.querySelector('ion-modal');
+  //           if (modal) {
+  //             await modal.dismiss();
+  //           }
+  //         } else {
+  //           await this.url.presentToast(res.message);
+  //         }
+  //       },
+  //       async (err) => {
+  //         await this.url.presentToast('Error verifying OTP.');
+  //       }
+  //     );
+  // }
+  
+  // updtaedeliveryboy
+
+  // async verify_delivery_otp(order_id2: any, otp: number) {
+  //   if (!otp) {
+  //     this.url.presentToast('Please Fill OTP.');
+  //     return;
+  //   }
+  
+  //   const data = {
+  //     order_id2: order_id2,
+  //     otp: otp
+  //   };
+  
+  //   this.http.post(`${this.url.serverUrl}verify_delivery_otp`, data)
+  //     .subscribe(
+  //       async (res: any) => {
+  //         console.log(res, 89);
+  //         if (res.status) {
+  //           console.log(res, 88);
+  //           this.deliveryorder.status = 'Order Delivered';
+  //           this.url.dismiss(); 
+  //           await this.url.presentToast(res.message); 
+  //         } else {
+  //           this.url.dismiss()  
+  //           this.url.presentToast('Invalid OTP');
+  //         }
+  //       },
+  //       async (err) => {
+  //         this.url.dismiss();
+  //         await this.presentToast('Error verifying OTP.');
+  //       }
+  //     );
+  // }
   
   async presentToast(message: string) {
     const toast = await this.toastController.create({
@@ -422,8 +560,41 @@ export class DashboardPage implements OnInit {
     });
     toast.present();
   }
-  
 
+  async getCurrentLocation() {
+    const coordinates = await Geolocation.getCurrentPosition();
+    this.currentLocation = {
+      lat: coordinates.coords.latitude,
+      lon: coordinates.coords.longitude
+    };
+    console.log('Current location:', this.currentLocation);
+    this.storeLocationInDatabase();
+  }
+
+  storeLocationInDatabase() {
+    this.storage.get('delivery').then((res1) => {
+      this.user_id1 = parseInt(res1.delivery_id, 10);
+      // alert(this.user_id1);
+      const locationData = {
+        id: this.user_id1,
+        latitude: this.currentLocation.lat,
+        longitude: this.currentLocation.lon
+      };
+      this.http.post(`${this.url.serverUrl}update_delivery_location`, locationData)
+        .subscribe(
+          (res: any) => {
+            if (res.status) {
+              console.log('Location stored successfully!');
+            } else {
+              console.error('Failed to store location');
+            }
+          },
+          (err) => {
+            console.error('Error storing location:', err);
+          }
+        );
+    });
+  }
 
 
 }

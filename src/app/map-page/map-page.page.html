@@ -1,16 +1,23 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-back-button class="text-white"></ion-back-button>
     </ion-buttons>
-    <ion-title style="color:#fff">Choose delivery location</ion-title>
+    <ion-title>Track Drop Off Location</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content color="tertiary">
+<ion-content>
   <div #mapElement class="map"></div>
-  <div class="button-container">
-    <ion-button expand="block" (click)="navigateToGoogleMaps('pickup')">Pick Up</ion-button>
-    <ion-button expand="block" (click)="navigateToGoogleMaps('dropoff')">Drop Off</ion-button>
+  <div class="mt-1" style="z-index: 1; position: absolute; bottom: 5; top: 0;">
+    <ion-chip class="bg-red-600 text-white">
+      <ion-icon class="text-white" name="alarm"></ion-icon>&nbsp;
+      {{ duration }}
+    </ion-chip>
+    <ion-chip class="bg-red-600 text-white">
+      <ion-icon class="text-white" name="navigate"></ion-icon>&nbsp;
+      {{ distance }}
+    </ion-chip>
+    <ion-chip class="bg-red-600 text-white" (click)="navigateToGoogleMaps('pickup')">Drop-Off</ion-chip>
   </div>
-</ion-content>
+  </ion-content>

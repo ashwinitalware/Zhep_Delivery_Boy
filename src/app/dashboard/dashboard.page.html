@@ -1,7 +1,7 @@
 <ion-header [translucent]="true"><ion-toolbar color="dark" align="center">
-  
-  <ion-toolbar color="dark" class="border-b-2 border-red-600 text-md font-bold" align="center">DELIVERY</ion-toolbar>
-</ion-toolbar>
+
+    <ion-toolbar color="dark" class="border-b-2 border-red-600 text-md font-bold" align="center">DELIVERY</ion-toolbar>
+  </ion-toolbar>
   <ion-toolbar color="dark">
     <ion-segment color="primary" class="pl-1 pr-1" value="order" (ionChange)='segmentChanged($event)'>
       <ion-segment-button value="order">
@@ -20,188 +20,220 @@
 <ion-content [fullscreen]="true">
   <div class="p-2">
     <div *ngIf="switchTab === 'order'" class="p-1 mt-2">
-      <div class="border border-gray-300 rounded-md mt-3" *ngFor="let deliveryorder of alldeliveryorder">
-        <div class="p-2">
-          <div class="flex justify-between">
-            <p class="text-lg font-bold text-black">{{deliveryorder.restro_name}}</p>
-            <p>+91 {{deliveryorder.restro_contact_no}}</p>
-          </div>
+      <div class="border border-gray-300 rounded-md mt-3 pb-3" *ngFor="let deliveryorder of alldeliveryorder">
+        <div class="pl-3 pt-4 pr-3">
 
-          <div class="border-b border-gray-400 border-dashed"></div>
-          
-          <div class="flex justify-between">
-            <p class="text-red-500 text-sm mt-1 font-bold"> ITEMS</p>
-            <p class="text-black text-sm text-gray-500 mt-1"> #{{deliveryorder.order_id2}}</p>
-          </div>
-
-          <!-- Items Div -->
-          <div class="border-gray-300 border-dashed border-b" *ngFor="let card of deliveryorder.item">
+          <div class="p-1">
             <div class="flex justify-between">
-              <p class="text-black text-lg font-semibold mt-2">{{card.index}}. {{card.recipe_name}} - Qty :
-                {{card.quantity}}</p>
-              <p class="text-sm mt-3">{{card.recipe_price}} /-</p>
+              <p class="text-black text-lg font-semibold">{{deliveryorder.restro_name}}</p>
+              <p class="text-green-600 text-xs font-semibold mb-1 mt-1">
+                <a href="tel:{{deliveryorder.restro_contact_no}}">
+                  <ion-icon name="call"></ion-icon>
+                  +91 {{deliveryorder.restro_contact_no}}
+                </a>
+              </p>
             </div>
-            <p class="text-gray-500 text-md">Varient : {{card.varient}}
-            </p>
 
+            <div class="flex justify-between mb-1">
+              <p class="text-gray-400 text-xs mt-1"># {{deliveryorder.order_id2}}</p>
+              <p class="text-gray-400 text-xs mt-1"><ion-icon name="calendar"></ion-icon> {{deliveryorder.order_date }}
+              </p>
+            </div>
           </div>
 
-          <div class="flex justify-between mt-2 pr-1">
-            <p class="text-gray-500 text-md mt-2"> TOTAL AMOUNT</p>
-            <p class="text-black font-semibold text-md mt-2">{{deliveryorder.total}} /-</p>
+          <div class="border-b border-dashed border-gray-300"></div>
+
+
+          <div class="p-2">
+            <div class="flex justify-between mt-1 ">
+              <p class="text-gray-400 text-xs mt-2"> ITEMS</p>
+            </div>
+
+            <div class="border-gray-300 border-dashed border-b" *ngFor="let card of deliveryorder.item">
+              <div class="flex justify-between">
+                <p class="text-black text-md font-600 mt-2">{{card.index}}. {{card.recipe_name}} - Qty :
+                  {{card.quantity}}<br>
+                  <span class="text-xs text-gray-400">VARIENT - {{card.varient}} </span>
+                </p>
+                <p class="mt-2">₹ {{card.recipe_price}} /-</p>
+              </div>
+            </div>
+
+            <div class="flex justify-between pr-2 mt-1" *ngIf="deliveryorder.coupon_code !== null">
+              <p class="text-sm font-semibold text-green-600 mt-1">You Have Saved</p>
+              <p class="font-bold text-green-600 text-md">₹ {{deliveryorder.coupon_code_value}}</p>
+            </div>
+            <!-- <p *ngIf="deliveryorder.coupon_code !== null"
+              class="text-xs bg-green-50 text-green-600 border-green-100 border rounded-sm text-center ">You got a
+              "₹{{deliveryorder.coupon_code_value}}" discount by using coupon code #{{deliveryorder.coupon_code}}!</p> -->
+
+            <div class="flex justify-between pr-2">
+              <p class="text-black font-semibold text-md mt-2"> TOTAL AMOUNT</p>
+              <p class="text-black font-semibold text-md mt-2">₹ {{deliveryorder.total}}</p>
+            </div>
           </div>
         </div>
 
-        <div class="p-2 -mt-1">
-          <p class="text-red-500 font-bold text-md "> Address</p>
-
-          <div class="mt-2 flex justify-between">
-            <div>
-              <p class="text-lg text-gray-500"> Pickup</p>
-              <p class="text-lg text-black">{{deliveryorder.pickup_address}}</p>
-            </div>
-            <div>
-              <!-- <ion-icon name="call"></ion-icon> -->
-              <a href="tel:{{deliveryorder.restro_contact_no}}"><ion-icon name="call"></ion-icon></a>
-            </div>
-          </div>
+        <div class="mt-1 pl-6">
+          <p class="text-black font-bold text-md"> Address</p>
 
           <div class="mt-2 flex justify-start">
             <div>
-              <p class="text-lg text-gray-500"> DropOff</p>
-              <p class="text-lg text-black">{{ deliveryorder.delivery_address.address_type }},
+              <p class="text-sm text-gray-500"> Pickup</p>
+              <p class="text-black text-sm font-600 mt-1">{{deliveryorder.pickup_address}}</p>
+            </div>
+          </div>
+
+
+          <div class="mt-2 flex justify-start">
+            <div>
+              <p class="text-sm text-gray-500"> DropOff</p>
+              <p class="text-black text-sm font-600 mt-1">{{ deliveryorder.delivery_address.address_type }},
                 {{ deliveryorder.delivery_address.house_number }},
                 {{ deliveryorder.delivery_address.address }},
                 {{ deliveryorder.delivery_address.landmark }}</p>
             </div>
           </div>
-        </div>  
 
-        <div class="p-2">
-          <p class="text-red-500 font-bold text-md mt-1"> USER DETAILS</p>
+          <p class="text-black font-bold text-md mt-2"> User Details</p>
 
-          <div class="mt-2 flex justify-between">
-            <div>
-              <p class="text-lg text-gray-500"> {{deliveryorder.delivery_address.full_name}}</p>
-            </div>
+          <div class="mt-1 flex justify-between  pr-4">
+            <p class="text-sm text-gray-500"> {{deliveryorder.delivery_address.full_name}} <br> <span
+                class="text-black">+91 {{deliveryorder.contact_number}}</span></p>
             <div align="center" (click)="callPhoneNumber(deliveryorder.contact_number)">
-              <p class="text-lg text-red-600 mt-1 pr-2">
+              <p class="text-lg text-black mt-2 pr-2">
                 <ion-icon name="call"></ion-icon>
               </p>
             </div>
           </div>
 
-          <div class="mt-2 flex justify-between">
-            <div>
-              <p class="text-lg text-gray-500">+91 {{deliveryorder.contact_number}}</p>
-            </div>
-          </div>
         </div>
 
-        <ion-row>
-          <ion-col size="6">
+
+        <ion-row class="pl-4 pr-4">
+          <ion-col size="12">
             <ion-button class="btn_class" color="success" expand="block"
               (click)="accept_table(deliveryorder['order_id2'])">
               Accept
             </ion-button>
           </ion-col>
-          <ion-col size="6">
+          <!-- <ion-col size="6">
             <ion-button class="btn_class" color="danger" expand="block" fill="outline">
               Reject
             </ion-button>
-          </ion-col>
+          </ion-col> -->
         </ion-row>
       </div>
     </div>
 
     <div *ngIf="switchTab === 'processing'" class="p-1 mt-2">
-      <div class="border border-gray-300 rounded-md  mt-2" *ngFor="let deliveryorder of processingorder">
-         <div class="p-1">
-            <p class="text-lg font-bold text-black">{{deliveryorder.restro_name}}</p>
-            <p>{{deliveryorder.restro_contact_no}}</p>
-          </div>
-          
-          <div class="border-b border-gray-400 border-dashed"></div>
+      <div class="border border-gray-300 rounded-md mt-3 pb-3" *ngFor="let deliveryorder of processingorder">
 
-        <div class="p-2">
-          <div class="flex justify-between">
-            <p class="text-red-500 text-sm mt-1 font-bold"> ITEMS</p>
-            <p class="text-black text-sm text-gray-500 mt-1"> #{{deliveryorder.order_id2}}</p>
-          </div>
-
-          <!-- Items Div -->
-          <div class="border-gray-300 border-dashed border-b" *ngFor="let card of deliveryorder.item">
-
+        <div class="pl-4 pt-4 pr-4">
+          <div class="p-1">
             <div class="flex justify-between">
-              <p class="text-black text-lg font-semibold mt-2">{{card.index}}. {{card.recipe_name}} - Qty :
-                {{card.quantity}}</p>
-              <p class="text-sm mt-3">{{card.recipe_price}} /-</p>
+              <p class="text-black text-lg font-semibold">{{deliveryorder.restro_name}}</p>
+              <p class="text-green-600 text-xs font-semibold mb-1 mt-1"><a
+                  href="tel:{{deliveryorder.restro_contact_no}}"><ion-icon name="call"></ion-icon> &nbsp;+91
+                  {{deliveryorder.restro_contact_no}}</a></p>
             </div>
-            <p class="text-gray-500 text-md">Varient : {{card.varient}}
-            </p>
 
-          </div>
-
-          <div class="flex justify-between mt-2">
-            <p class="text-gray-500 text-md mt-2"> TOTAL AMOUNT</p>
-            <p class="text-black font-semibold text-md mt-2">{{deliveryorder.total}} /-</p>
-          </div>
-        </div>
-
-        <div class="p-2">
-          <p class="text-red-500 font-bold text-md mt-2"> Address</p>
-
-          <div class="mt-2 flex justify-start">
-            <div>
-              <p class="text-lg text-gray-500"> Pickup</p>
-              <p class="text-lg text-black">{{deliveryorder.pickup_address}}</p>
+            <div class="flex justify-between mb-1">
+              <p class="text-gray-400 text-xs mt-1"># {{deliveryorder.order_id2}}</p>
+              <p class="text-gray-400 text-xs mt-1"><ion-icon name="calendar"></ion-icon> {{deliveryorder.order_date }}
+              </p>
             </div>
           </div>
 
-          <div class="mt-2 flex justify-start">
+          <div class="border-b border-dashed border-gray-300"></div>
+
+
+          <div class="p-2">
+            <div class="flex justify-between mt-1 ">
+              <p class="text-gray-400 text-xs mt-2"> ITEMS</p>
+            </div>
+
+            <div class="border-gray-300 border-dashed border-b" *ngFor="let card of deliveryorder.item">
+              <div class="flex justify-between">
+                <p class="text-black text-md font-600 mt-2">{{card.index}}. {{card.recipe_name}} - Qty :
+                  {{card.quantity}}<br>
+                  <span class="text-xs text-gray-400">VARIENT - {{card.varient}} </span>
+                </p>
+                <p class="mt-2">₹ {{card.recipe_price}} /-</p>
+              </div>
+            </div>
+
+            <div class="flex justify-between pr-2 mt-1" *ngIf="deliveryorder.coupon_code !== null">
+              <p class="text-sm font-semibold text-green-600 mt-1">You Have Saved</p>
+              <p class="font-bold text-green-600 text-md">₹ {{deliveryorder.coupon_code_value}}</p>
+            </div>
+
+            <!-- <p *ngIf="deliveryorder.coupon_code !== null" class="text-xs bg-green-50 text-green-600 border-green-100 border rounded-sm text-center ">You got a
+              "₹{{deliveryorder.coupon_code_value}}" discount by using coupon code #{{deliveryorder.coupon_code}}!</p> -->
+
+            <div class="flex justify-between pr-2">
+              <p class="text-black font-semibold text-md mt-2"> TOTAL AMOUNT</p>
+              <p class="text-black font-semibold text-md mt-2">₹ {{deliveryorder.total}}</p>
+            </div>
+          </div>
+
+          <p class="text-black font-bold text-md mt-2 pl-2"> Address</p>
+          <div class="mt-2 flex justify-start pl-2">
             <div>
-              <p class="text-lg text-gray-500"> DropOff</p>
-              <p class="text-lg text-black">{{ deliveryorder.delivery_address.address_type }},
+              <p class="text-md font-semibold text-gray-600"> Pickup</p>
+              <p class="text-black text-md font-600 mt-1">{{deliveryorder.pickup_address}}</p>
+            </div>
+          </div>
+
+          <div class="mt-2 flex justify-start pl-2">
+            <div>
+              <p class="text-md font-semibold text-gray-600"> DropOff</p>
+              <p class="text-black text-md font-600 mt-1">{{ deliveryorder.delivery_address.address_type }},
                 {{ deliveryorder.delivery_address.house_number }},
                 {{ deliveryorder.delivery_address.address }},
                 {{ deliveryorder.delivery_address.landmark }}</p>
             </div>
           </div>
-        </div>
 
-        <div class="p-2">
-          <p class="text-red-500 font-bold text-md mt-1"> USER DETAILS</p>
 
-          <div class="mt-2 flex justify-between">
-            <div>
-              <p class="text-lg text-gray-500"> {{deliveryorder.delivery_address.full_name}}</p>
-              <p class="text-lg text-gray-500">+91 {{deliveryorder.contact_number}}</p>
-            </div>
-            <!-- <div align="center">
-              <p class="text-lg text-red-600 mt-1 pr-2" {{deliveryorder.restro_contact_no}}><ion-icon name="call"></ion-icon></p>
-            </div> -->
+          <p class="text-black font-bold text-md mt-2 pl-2"> User Details</p>
+
+          <div class="mt-1 flex justify-between pl-2 pr-2">
+            <p class="text-sm text-gray-500"> {{deliveryorder.delivery_address.full_name}} <br> <span
+                class="text-black">+91 {{deliveryorder.contact_number}}</span></p>
             <div align="center" (click)="callPhoneNumber(deliveryorder.contact_number)">
-              <p class="text-lg text-red-600 mt-1 pr-2">
+              <p class="text-lg text-black mt-2 pr-2">
                 <ion-icon name="call"></ion-icon>
               </p>
             </div>
           </div>
-
-       
         </div>
+
 
         <div class="border-b border-gray-300 border-dashed mt-3"></div>
 
-        <!-- First Row (In Progress) -->
+        <!-- First Row (In Progress)  -->
+        <!-- <ion-row *ngIf="deliveryorder.status === 'In Progress' ">
+          <ion-col size="12">
+            <div [style.backgroundColor]="getBackgroundColor(deliveryorder.status)" class="rounded-md">
+              <div class="flex justify-center p-3">
+                <p class="text-sm text-white flex items-center">{{ deliveryorder.status }}</p>
+              </div>
+            </div>
+          </ion-col>
+        </ion-row> -->
+
+        <!-- Second Row (Order Cooking, Ready for Pickup, Pending Delivery Boy)  -->
+        <!-- Second Row (Order Cooking, Ready for Pickup, Pending Delivery Boy)  -->
         <ion-row
-          *ngIf="deliveryorder.status === 'Ready for Pickup' || deliveryorder.status === 'In Progress' || deliveryorder.status === 'Pending Delivery Boy' || deliveryorder.status === 'Order Cooking' ">
+          *ngIf="deliveryorder.status === 'In Progress'
+           || deliveryorder.status === 'Order Cooking' || deliveryorder.status === 'Ready for Pickup' || deliveryorder.status === 'Pending Delivery Boy'">
           <ion-col size="12">
             <div [style.backgroundColor]="getBackgroundColor(deliveryorder.status)" class="rounded-md">
               <div class="flex justify-between p-3">
                 <p class="text-sm text-white flex items-center">{{ deliveryorder.status }}</p>
                 <p class="border border-white rounded-full text-xs p-1 text-white"
-                  (click)="show_map_new(deliveryorder.pickup_address)">View Map</p>
-
+                  (click)="show_map_new(deliveryorder.pickup_address)">View Map  </p>
               </div>
             </div>
           </ion-col>
@@ -214,7 +246,7 @@
           </ion-col>
         </ion-row>
 
-        <!-- Second Row (Ready for Delivery) -->
+        <!-- Third Row (Ready for Delivery) -->
         <ion-row *ngIf="deliveryorder.status === 'Ready for Delivery'">
           <ion-col size="12">
             <div [style.backgroundColor]="getBackgroundColor(deliveryorder.status)" class="rounded-md">
@@ -242,7 +274,6 @@
                     <ion-title>Verify OTP</ion-title>
                     <ion-buttons slot="end">
                       <ion-button color="light" (click)="modal.dismiss()">
-                        <!-- Close -->
                         <ion-icon class="text-white" name="close"></ion-icon>
                       </ion-button>
                     </ion-buttons>
@@ -263,12 +294,12 @@
           </div>
         </ion-row>
 
+
         <ion-row *ngIf="deliveryorder.status === 'Order Delivered'">
           <ion-col size="12">
             <div [style.backgroundColor]="getBackgroundColor(deliveryorder.status)" class="rounded-md">
               <div class="flex justify-center p-3">
                 <p class="text-sm text-white flex items-center">{{ deliveryorder.status }}</p>
-
               </div>
             </div>
           </ion-col>
@@ -302,7 +333,7 @@
         </div>
 
         <div class="p-2">
-          <p class="text-red-500 font-bold text-md mt-2"> Address</p>
+          <p class="text-black font-bold text-md mt-2"> Address</p>
 
           <div class="mt-2 flex justify-start">
             <div>
@@ -323,7 +354,7 @@
         </div>
 
         <div class="p-2">
-          <p class="text-red-500 font-bold text-md mt-1"> USER DETAILS</p>
+          <p class="text-black font-bold text-md mt-1"> USER DETAILS</p>
 
           <div class="mt-2 flex justify-between">
             <div>
@@ -371,20 +402,21 @@
 
 <ion-footer>
   <ion-toolbar>
-    <div class="flex justify-between p-2 pr-10 pl-10">
-      <a routerLink="/dashboard">
-        <div class="text-center text-gray-600 hover:text-red-600">
-          <ion-icon name="fast-food"></ion-icon>
+    <div class="flex justify-between p-2 pl-3 pr-3">
+      <ion-router-link routerLink="/dashboard">
+        <div align="center" class=" text-red-600">
+          <img width="25" height="25" src="assets/22.png" alt="">
           <ion-title class="text-sm">Orders</ion-title>
         </div>
-      </a>
-
-      <a routerLink="/profile">
-        <div class="text-center text-gray-600 hover:text-red-600">
-          <ion-icon name="person"></ion-icon>
-          <ion-title class="text-sm">Profile</ion-title>
+      </ion-router-link>
+      <ion-router-link routerLink="/profile">
+        <div align="center" class="text-gray-400">
+          <img width="25" height="25" src="assets/12.png" alt="">
+          <ion-title class="text-sm">Account</ion-title>
         </div>
-      </a>
+      </ion-router-link>
     </div>
   </ion-toolbar>
+
+
 </ion-footer>

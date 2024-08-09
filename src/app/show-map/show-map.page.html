@@ -3,63 +3,21 @@
     <ion-buttons slot="start">
       <ion-back-button class="text-white"></ion-back-button>
     </ion-buttons>
-    <ion-title>Select Address</ion-title>
+    <ion-title>Track Location</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <!-- (click)="navigateToGoogleMaps('pickup')" -->
-  <!-- (click)="navigateToGoogleMaps('dropoff')" -->
-  <!-- <div #mapElement class="map"></div>
-  <div class="button-container">
-    <ion-button expand="block" >Pick Up</ion-button>
-    <ion-button expand="block">Drop Off</ion-button>
-  <button (click)="showRoute()">Show Route</button> 
-  </div> -->
-  <!-- <div class="address_main_div">
-    <ion-row class="pl-2 pr-2">
-      <ion-label class="text-black"><ion-icon class="text-red-600" name="location"></ion-icon>
-        {{this.user_address}}</ion-label>
-    </ion-row>
-    
-  </div> -->
-
-  <ion-content>
- 
-    <div #mapElement class="map"></div>
-
-    <div style="z-index: 10000; position: absolute; top: 16px; width: 100%; display: flex; justify-content: flex-end;">
-      <button class="bg-red-600 text-white p-1 text-xs rounded-full p-1 w-auto pl-2 pr-2" (click)="navigateToGoogleMaps('pickup')">time</button>
-
-      <button class="bg-red-600 text-white p-1 text-xs rounded-full p-1 w-auto pl-2 pr-2" (click)="navigateToGoogleMaps('pickup')">Pick-Up</button>
-    &nbsp;  <button class="bg-red-600 text-white p-1 text-xs rounded-full p-1 w-auto pl-2 pr-2" (click)="navigateToGoogleMaps('pickup')">Drop-Of</button>&nbsp;
+  <div #mapElement class="map"></div>
+  <div class="mt-1" style="z-index: 1; position: absolute; bottom: 5; top: 0;">
+    <ion-chip class="bg-red-600 text-white">
+      <ion-icon class="text-white" name="alarm"></ion-icon>&nbsp;
+      {{ duration }}
+    </ion-chip>
+    <ion-chip class="bg-red-600 text-white">
+      <ion-icon class="text-white" name="navigate"></ion-icon>&nbsp;
+      {{ distance }}
+    </ion-chip>
+    <ion-chip class="bg-red-600 text-white" (click)="navigateToGoogleMaps('pickup')">Pick-Up</ion-chip>
   </div>
-
-
-   <!-- <ion-row style="z-index: 10000; position: absolute; top: 16px;">
-    
-    <ion-col size="12">
-      <button class="bg-red-600 text-white p-1 text-xs rounded-full p-1 w-full pl-2 pr-2" (click)="navigateToGoogleMaps('pickup')">Pick-Up</button>
-        <!-- <ion-button expand="block" shape="round"  (click)="navigateToGoogleMaps('pickup')">Pick Up</ion-button> 
-    </ion-col>
-    <ion-col size="12">
-      <button class="bg-red-600 text-white p-1 text-xs rounded-full p-1 w-full pl-2 pr-2" (click)="navigateToGoogleMaps('pickup')">Drop-Off</button>
-
-        <!-- <ion-button expand="block" shape="round" (click)="navigateToGoogleMaps('pickup')">Drop Off</ion-button> 
-    </ion-col>
-   </ion-row> -->
-    
-    <div class="address_main_div">
-      <ion-row class="pl-2 pr-2">
-        <ion-label class="text-black"><ion-icon class="text-red-600" name="location"></ion-icon>
-          {{this.user_address}}</ion-label>
-      </ion-row>
-      <ion-row>
-        <ion-col size="12" >
-          <ion-button  class="btn_class p-1" shape="round" color="danger" expand="block" 
-         >Complete Address</ion-button>
-        </ion-col>
-      </ion-row>
-    </div>
-  
 </ion-content>

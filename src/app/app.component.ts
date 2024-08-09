@@ -124,29 +124,69 @@ export class AppComponent {
     this.url.presentToast('Logout Successfully.');
   }
 
-
   get_delivery_info() {
     this.storage.get('delivery').then((res1) => {
-      this.user_id1 = parseInt(res1.delivery_id, 10);
-      // alert(this.user_id1);
+      if (res1 && res1.delivery_id) {
+        this.user_id1 = parseInt(res1.delivery_id, 10);
+        if (isNaN(this.user_id1)) {
+          console.error(`Invalid delivery_id: ${res1.delivery_id}`);
+          this.url.presentToast('Invalid user ID.');
+          return;
+        }
+      } else {
+        console.error('No delivery information found in storage.');
+        this.url.presentToast('No delivery information found.');
+        return;
+      }
+  
       this.url.presentLoading();
-      this.url.dismiss();
-      this.http
-        .get(`${this.url.serverUrl}get_delivery_boy_info?id=${this.user_id1}`)
-        .subscribe(
-          (res: any) => {
-            if (res === 0) {
-              this.url.presentToast('You Have no Profile.');
-            } else {
-              console.log(res);
-              this.Restro_Name = res.data[0].Restro_Name;
-              this.Contact_No = res.data[0].Contact_No;
-            }
-          },
-          (err) => {
+      this.http.get(`${this.url.serverUrl}get_delivery_boy_info?id=${this.user_id1}`).subscribe(
+        (res: any) => {
+          if (res === 0) {
+            this.url.presentToast('You Have no Profile.');
+          } else {
+            console.log(res);
+            this.Restro_Name = res.data[0].Restro_Name;
+            this.Contact_No = res.data[0].Contact_No;
           }
-        );
+          this.url.dismiss();
+        },
+        (err) => {
+          console.error('Error fetching delivery boy info:', err);
+          this.url.presentToast('Error fetching profile.');
+          this.url.dismiss();
+        }
+      );
+    }).catch(err => {
+      console.error('Error accessing storage:', err);
+      this.url.presentToast('Error accessing storage.');
+      this.url.dismiss();
     });
   }
+  
+
+  // get_delivery_info() {
+  //   this.storage.get('delivery').then((res1) => {
+  //     this.user_id1 = parseInt(res1.delivery_id, 10);
+  //     // alert(this.user_id1);
+  //     this.url.presentLoading();
+  //     this.url.dismiss();
+  //     this.http
+  //       .get(`${this.url.serverUrl}get_delivery_boy_info?id=${this.user_id1}`)
+  //       .subscribe(
+  //         (res: any) => {
+  //           if (res === 0) {
+  //             this.url.presentToast('You Have no Profile.');
+  //           } else {
+  //             console.log(res);
+  //             this.Restro_Name = res.data[0].Restro_Name;
+  //             this.Contact_No = res.data[0].Contact_No;
+  //           }
+  //         },
+  //         (err) => {
+  //         }
+  //       );
+  //   });
+  // }
 
 }

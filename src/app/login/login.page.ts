@@ -49,26 +49,63 @@ export class LoginPage implements OnInit {
             this.url.presentToast('User not Registered');
             this.dismissLoader();
           } else {
-            this.session_data['contact'] = res.user.id;
-            this.storage.set('delivery', this.session_data);
+            this.session_data['contact'] = res.user.contact;
+            this.storage.set('delivery', { delivery_id: res.user.id });
   
             this.url.presentToast('Login Successfully');
-            // Check if the user is not registered before navigating to dashboard
-            if (res.status === false) {
+            this.router.navigate(['/dashboard']).then(() => {
               this.dismissLoader();
-            } else {
-              this.router.navigate(['/dashboard']).then(() => {
-                this.dismissLoader();
-              });
-            }
+            });
           }
         },
         (err) => {
           this.dismissLoader();
+          console.error('Login error', err);
         }
       );
     }
   }
+  
+
+  // login_submit(f: NgForm) {
+  //   console.log(f.value);
+  
+  //   if (f.value.contact !== '' && f.value.password !== '') {
+  //     this.url.presentLoading();
+  
+  //     const requestData = {
+  //       contact: f.value.contact,
+  //       password: f.value.password
+  //     };
+  
+  //     this.http.post(`${this.url.serverUrl}delivery_check`, requestData).subscribe(
+  //       (res: any) => {
+  //         console.log(res);
+  
+  //         if (res.status === false) {
+  //           this.url.presentToast('User not Registered');
+  //           this.dismissLoader();
+  //         } else {
+  //           this.session_data['contact'] = res.user.id;
+  //           this.storage.set('delivery', this.session_data);
+  
+  //           this.url.presentToast('Login Successfully');
+  //           // Check if the user is not registered before navigating to dashboard
+  //           if (res.status === false) {
+  //             this.dismissLoader();
+  //           } else {
+  //             this.router.navigate(['/dashboard']).then(() => {
+  //               this.dismissLoader();
+  //             });
+  //           }
+  //         }
+  //       },
+  //       (err) => {
+  //         this.dismissLoader();
+  //       }
+  //     );
+  //   }
+  // }
 
   // login_submit(f: NgForm) {
   //   console.log(f.value);

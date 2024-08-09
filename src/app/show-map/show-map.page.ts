@@ -2,10 +2,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Geolocation } from '@capacitor/geolocation';
-import { DataService } from '../data.service';
 import { HttpClient } from '@angular/common/http';
-import { NavController, Platform } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
+import { DataService } from '../data.service';
+import { NavController } from '@ionic/angular';
 
 declare const google: any;
 
@@ -15,6 +15,7 @@ declare const google: any;
   styleUrls: ['./show-map.page.scss'],
 })
 export class ShowMapPage implements OnInit {
+ 
   map: any;
   @ViewChild('mapElement') mapElement: any;
   page: HTMLElement | null = document.querySelector('app-show-map');
@@ -22,7 +23,6 @@ export class ShowMapPage implements OnInit {
   modalRef: HTMLIonModalElement | undefined;
 
   shop_location: any;
-  // getCurrentPosition: any;
   user_address = 'Move home marker to select your address';
   btn_disabled: any;
   user_lat = 20.938894;
@@ -31,11 +31,14 @@ export class ShowMapPage implements OnInit {
   geolocation: any;
   user_id1: any;
   addressType: string;
+
   pickupAddress: any;
   deliveryAddress: any;
-  api_key: any; 
+
+  api_key: any;
   distance: any;
   duration: any;
+
   constructor(
     public url: DataService,
     private http: HttpClient,
@@ -44,10 +47,6 @@ export class ShowMapPage implements OnInit {
     private storage: Storage,
     private navCtrl: NavController
   ) {
-    // this.geolocation = Geolocation;
-    // this.user_address = this.route.snapshot.queryParams['address'];
-    // this.addressType = this.route.snapshot.queryParams['type'];
-
     this.geolocation = Geolocation;
     this.user_address = this.route.snapshot.queryParams['address'];
     this.addressType = this.route.snapshot.queryParams['type'];
@@ -55,7 +54,6 @@ export class ShowMapPage implements OnInit {
   }
 
   async ngOnInit() {
-
     this.pickupAddress = this.route.snapshot.queryParams['address'];
     this.deliveryAddress = this.route.snapshot.queryParams['deliveryAddress'];
     await this.getApiKeyAndLoadMap();
@@ -64,11 +62,10 @@ export class ShowMapPage implements OnInit {
     this.showRoute();
   }
 
-
   async showRoute() {
     try {
       const currentLocation = await this.getCurrentPosition();
-      const destinationLocation = await this.getGeocode(this.user_address);
+      const destinationLocation = await this.getGeocode(this.pickupAddress);
       this.createRoute(currentLocation, destinationLocation);
     } catch (error) {
       console.error('Error showing route:', error);
@@ -98,33 +95,43 @@ export class ShowMapPage implements OnInit {
   }
 
   navigateToGoogleMaps(type: string) {
-    let address = type === 'pickup' ? this.pickupAddress : this.deliveryAddress;
-    console.log(address,78);
+    let address = type === 'delivery' ? this.deliveryAddress : this.pickupAddress;
     if (address) {
-      alert(address);
       let googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
       window.open(googleMapsUrl, '_system');
-      console.log(`Button clicked for ${type} address.`);
-    
     } else {
-      alert();
       console.error('Address not provided.');
     }
-}
-
-// async navigateToGoogleMaps(type: string) {
-//   let address = type === 'pickup' ? this.pickupAddress : this.deliveryAddress;
-//   if (address) {
-//     const currentLocation = await this.getCurrentPosition();
-//     const destinationLocation = await this.getGeocode(address);
-//     this.calculateRoute(currentLocation, destinationLocation);
-//   } else {
-//     console.error('Address not provided.');
-//   }
-// }
-
-
+  }
   createRoute(origin: any, destination: any) {
+    const directionsService = new google.maps.DirectionsService();
+    const directionsDisplay = new google.maps.DirectionsRenderer({
+      polylineOptions: {
+        strokeColor: '#000000', // Set the route color to black
+        strokeWeight: 7, // Adjust the thickness of the route line
+      }
+    });
+    directionsDisplay.setMap(this.map);
+  
+    const request = {
+      origin: origin,
+      destination: destination,
+      travelMode: 'DRIVING'
+    };
+  
+    directionsService.route(request, (result: any, status: any) => {
+      if (status === 'OK') {
+        directionsDisplay.setDirections(result);
+  
+        const route = result.routes[0].legs[0];
+        this.duration = route.duration.text;
+        this.distance = route.distance.text;
+      } else {
+        console.error('Directions request failed due to ' + status);
+      }
+    });
+  }
+  createRoute1(origin: any, destination: any) {
     const directionsService = new google.maps.DirectionsService();
     const directionsDisplay = new google.maps.DirectionsRenderer();
     directionsDisplay.setMap(this.map);
@@ -138,25 +145,10 @@ export class ShowMapPage implements OnInit {
     directionsService.route(request, (result: any, status: any) => {
       if (status == 'OK') {
         directionsDisplay.setDirections(result);
-      } else {
-        console.error('Directions request failed due to ' + status);
-      }
-    });
-  }
 
-  async calculateRoute(origin: any, destination: any) {
-    const directionsService = new google.maps.DirectionsService();
-    const request = {
-      origin: origin,
-      destination: destination,
-      travelMode: 'DRIVING'
-    };
-
-    directionsService.route(request, (result: any, status: any) => {
-      if (status == 'OK') {
-        const route = result.routes[0];
-        this.distance = route.legs[0].distance.text;
-        this.duration = route.legs[0].duration.text;
+        const route = result.routes[0].legs[0];
+        this.duration = route.duration.text;
+        this.distance = route.distance.text;
       } else {
         console.error('Directions request failed due to ' + status);
       }
@@ -195,9 +187,19 @@ export class ShowMapPage implements OnInit {
       zoom: 14,
       disableDefaultUI: true,
     });
-    this.printCurrentPosition();
   }
 
+  ionViewDidEnter() {
+    if (typeof google === 'undefined') {
+      console.error('Google Maps API script has not loaded.');
+      return;
+    }
+    this.map = new google.maps.Map(this.mapElement.nativeElement, {
+      center: { lat: 20.945643, lng: 77.7639723 },
+      zoom: 14,
+      disableDefaultUI: true,
+    });
+  }
 
   get_user_current_position(lat: any, lang: any) {
     this.user_marker = new google.maps.Marker({
@@ -227,70 +229,50 @@ export class ShowMapPage implements OnInit {
 
   fetch_address(lat: any, lng: any) {
     const reverseGeocodingUrl =
-      'https://maps.googleapis.com/maps/api/geocode/json?latlng=' +
-      lat +
-      ',' +
-      lng +
-      '&sensor=true&key=${this.api_key}'; 
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&sensor=true&key=${this.api_key}`;
     fetch(reverseGeocodingUrl)
       .then((result) => result.json())
       .then((featureCollection) => {
         if (featureCollection.results && featureCollection.results.length > 0) {
           this.user_address = featureCollection.results[0].formatted_address;
           this.url.user_map_address = featureCollection.results[0].formatted_address;
-          console.log(lat);
           this.url.user_map_lat = lat;
           this.url.user_map_lan = lng;
           this.btn_disabled = false;
         } else {
           console.error('No results found for the given coordinates.');
-          // Handle the case where no results are found
         }
       })
       .catch((error) => {
         console.error('Error fetching address:', error);
-        // Handle the error, e.g., show a message to the user
       });
   }
   
-
-  ionViewDidEnter() {
-    if (typeof google === 'undefined') {
-      // Google Maps API script hasn't finished loading yet
-      console.error('Google Maps API script has not loaded.');
-      return;
-    }
-    this.map = new google.maps.Map(this.mapElement.nativeElement, {
-      center: { lat: 20.945643, lng: 77.7639723 },
-      zoom: 14,
-      disableDefaultUI: true,
-    });
-    this.printCurrentPosition();
-  }
-  
-  animatedMove(marker: any, t: any, current: any, moveto: any) {
-    const lat = current.lat();
-    const lng = current.lng();
-    const latlng = new google.maps.LatLng(lat, lng);
-    marker.setPosition(latlng);
-  }
-
-  async printCurrentPosition() {
-    try {
-      const resp = await this.geolocation.getCurrentPosition({
-        maximumAge: 5000,
-        timeout: 5000,
-        enableHighAccuracy: true,
+  fetch_address1(lat: any, lng: any) {
+    const reverseGeocodingUrl =
+      'https://maps.googleapis.com/maps/api/geocode/json?latlng=' +
+      lat +
+      ',' +
+      lng +
+      '&sensor=true&key=${this.api_key}';
+    fetch(reverseGeocodingUrl)
+      .then((result) => result.json())
+      .then((featureCollection) => {
+        if (featureCollection.results && featureCollection.results.length > 0) {
+          this.user_address = featureCollection.results[0].formatted_address;
+          this.url.user_map_address = featureCollection.results[0].formatted_address;
+          this.url.user_map_lat = lat;
+          this.url.user_map_lan = lng;
+          this.btn_disabled = false;
+        } else {
+          console.error('No results found for the given coordinates.');
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching address:', error);
       });
-      this.get_user_current_position(resp.coords.latitude, resp.coords.longitude);
-      console.log('Current position:', resp.coords.latitude);
-    } catch (error) {
-      console.error('Error getting current position:', error);
-    }
   }
 
-  updateAddress(address: string) {
-    this.user_address = address;
-  }
+
 
 }

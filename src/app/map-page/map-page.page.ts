@@ -1,11 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Geolocation } from '@capacitor/geolocation';
-import { HttpClient } from "@angular/common/http";
-import { Platform } from '@ionic/angular';
+import { HttpClient } from '@angular/common/http';
+import { Storage } from '@ionic/storage-angular';
 import { DataService } from '../data.service';
-import { ActivatedRoute } from '@angular/router';
+import { NavController } from '@ionic/angular';
 
-declare var google: any;
+declare const google: any;
 
 @Component({
   selector: 'app-map-page',
@@ -14,191 +15,237 @@ declare var google: any;
 })
 export class MapPagePage implements OnInit {
 
-  @ViewChild('mapElement') mapElement: any;
   map: any;
-  user_address: string = "Choose delivery location";
-  loader_visible: boolean = true;
-  api_key: string = ''; // Initialize with your API key
+  @ViewChild('mapElement') mapElement: any;
+  page: HTMLElement | null = document.querySelector('app-show-map');
+
+  modalRef: HTMLIonModalElement | undefined;
+
+  shop_location: any;
+  user_address = 'Move home marker to select your address';
+  btn_disabled: any;
+  user_lat = 20.938894;
+  user_lang = 77.7421033;
+  user_marker: any;
+  geolocation: any;
+  user_id1: any;
+  addressType: string;
+
   pickupAddress: any;
   deliveryAddress: any;
 
+  api_key: any;
+  distance: any;
+  duration: any;
+
   constructor(
     public url: DataService,
-    public http: HttpClient,
-    public platform: Platform,
-    private route: ActivatedRoute
-  ) {}
-
-  ngOnInit() {
-    this.platform.ready().then(() => {
-      this.route.queryParams.subscribe(params => {
-        if (params && params['address']) {
-          if (params['address'].startsWith('Pickup')) {
-            this.pickupAddress = params['address'].substr(7);
-          } else {
-            this.deliveryAddress = params['address'].substr(9);
-          }
-        }
-      });
-      this.fetchApiKeyAndLoadMap();
-       // this.updateDeliveryLo0cationContinuously();
-    });
+    private http: HttpClient,
+    private router: Router,
+    private route: ActivatedRoute,
+    private storage: Storage,
+    private navCtrl: NavController
+  ) {
+    this.geolocation = Geolocation;
+    this.user_address = this.route.snapshot.queryParams['address'];
+    this.addressType = this.route.snapshot.queryParams['type'];
+    this.pickupAddress = this.route.snapshot.queryParams['address'];
   }
 
-  printCurrentPosition = () => {
-    Geolocation.getCurrentPosition({
-      maximumAge: 5000,
-      timeout: 5000,
-      enableHighAccuracy: true
-    }).then((resp) => {
-      this.get_user_current_position(resp.coords.latitude, resp.coords.longitude);
-    }).catch((error) => {
-      console.error('Error getting current position:', error);
-    });
-  };
-
-
-  get_user_current_position(lat: any, lang: any) {
-    // Send the current location to the server to update the database
-    this.updateDeliveryLocation(lat, lang);
-  
-    // Update the center of the map to the obtained coordinates
-    this.map.setCenter({ lat: lat, lng: lang });
-  
-    // Optionally, you can add a marker to indicate the current location
-    // Uncomment the following lines to add a marker
-    // var marker = new google.maps.Marker({
-    //   position: { lat: lat, lng: lang },
-    //   map: this.map,
-    //   title: 'Current Location'
-    // });
-  }
-  
-
-  fetchApiKeyAndLoadMap() {
-    // Fetch API key from your server
-    this.http.get(`${this.url.serverUrl}api_key`).subscribe(
-      (res: any) => {
-        if (res.status) {
-          this.api_key = res.data;
-          this.loadGoogleMapsScript();
-        } else {
-          console.error('Error fetching API key:', res);
-        }
-      },
-      (err) => {
-        console.error('Error fetching API key:', err);
-      }
-    );
+  async ngOnInit() {
+    this.pickupAddress = this.route.snapshot.queryParams['address'];
+    this.deliveryAddress = this.route.snapshot.queryParams['deliveryAddress'];
+    await this.getApiKeyAndLoadMap();
+    await this.loadGoogleMapsScript();
+    this.initializeMap();
+    this.showRoute();
   }
 
-  loadGoogleMapsScript() {
-    const script = document.createElement('script');
-    script.src = 'https://maps.googleapis.com/maps/api/js?key=' + this.api_key;
-    script.async = true;
-    script.defer = true;
-
-    script.onload = () => {
-      this.initializeMap();
-    };
-
-    document.body.appendChild(script);
-  }
-
-  initializeMap() {
-    // Initialize the map
-    this.map = new google.maps.Map(
-      this.mapElement.nativeElement,
-      {
-        center: { lat: 0, lng: 0 }, // Initialize with a default center
-        zoom: 14,
-        disableDefaultUI: true,
-      }
-    );
-  
-    // Fetch current position and then draw route if available
-    this.printCurrentPosition();
-  
-    if (this.pickupAddress) {
-      // Draw route from current location to pickup address
-      this.drawRoute(this.pickupAddress);
-    } else if (this.deliveryAddress) {
-      // Draw route from current location to delivery address
-      this.drawRoute(this.deliveryAddress);
+  async showRoute() {
+    try {
+      const currentLocation = await this.getCurrentPosition();
+      const destinationLocation = await this.getGeocode(this.pickupAddress);
+      this.createRoute(currentLocation, destinationLocation);
+    } catch (error) {
+      console.error('Error showing route:', error);
     }
   }
 
-  // initializeMap() {
-  //   // Initialize the map
-  //   this.map = new google.maps.Map(
-  //     this.mapElement.nativeElement,
-  //     {
-  //       center: { lat: 20.945643, lng: 77.7639723 },
-  //       zoom: 14,
-  //       disableDefaultUI: true,
-  //     }
-  //   );
-  
-  //   // Fetch current position and then draw route if available
-  //   this.printCurrentPosition();
-  
-  //   if (this.pickupAddress) {
-  //     // Draw route from current location to pickup address
-  //     this.drawRoute(this.pickupAddress);
-  //   } else if (this.deliveryAddress) {
-  //     // Draw route from current location to delivery address
-  //     this.drawRoute(this.deliveryAddress);
-  //   }
-  // }
-  
-
-  updateDeliveryLocation(lat: number, lng: number) {
-    this.http.post(`${this.url.serverUrl}update_delivery_location1`, {
-      lat: lat,
-      lng: lng
-    }).subscribe(
-      (res: any) => {
-        console.log('Delivery location updated:', res);
-      },
-      (err) => {
-        console.error('Error updating delivery location:', err);
-      }
-    );
+  async getCurrentPosition() {
+    const resp = await this.geolocation.getCurrentPosition({
+      maximumAge: 5000,
+      timeout: 5000,
+      enableHighAccuracy: true,
+    });
+    return { lat: resp.coords.latitude, lng: resp.coords.longitude };
   }
 
-  drawRoute(destination: string) {
-    const directionsService = new google.maps.DirectionsService();
-    const directionsRenderer = new google.maps.DirectionsRenderer();
-    directionsRenderer.setMap(this.map);
-
-    const request = {
-      origin: { lat: 20.945643, lng: 77.7639723 }, 
-      destination: destination,
-      travelMode: 'DRIVING'
-    };
-
-    directionsService.route(request, (result:any, status:any) => {
-      if (status === 'OK') {
-        directionsRenderer.setDirections(result);
-      } else {
-        console.error('Error drawing route:', status);
-      }
+  async getGeocode(address: string) {
+    const geocoder = new google.maps.Geocoder();
+    return new Promise((resolve, reject) => {
+      geocoder.geocode({ address }, (results: any, status: any) => {
+        if (status === 'OK') {
+          resolve({ lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng() });
+        } else {
+          reject(status);
+        }
+      });
     });
   }
 
-  // updateDeliveryLocationContinuously() {
-  //   // Continuously update the delivery boy's location
-  //   setInterval(() => {
-  //     this.printCurrentPosition();
-  //   }, 5000); // Update every 5 seconds
-  // }
-
   navigateToGoogleMaps(type: string) {
-    let address = type === 'pickup' ? this.pickupAddress : this.deliveryAddress;
+    let address = type === 'delivery' ? this.deliveryAddress : this.pickupAddress;
     if (address) {
-      window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`, '_system');
+      alert(address);
+      let googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
+      window.open(googleMapsUrl, '_system');
     } else {
       console.error('Address not provided.');
     }
   }
+  createRoute(origin: any, destination: any) {
+    const directionsService = new google.maps.DirectionsService();
+    const directionsDisplay = new google.maps.DirectionsRenderer({
+      polylineOptions: {
+        strokeColor: '#000000', // Set the route color to black
+        strokeWeight: 7, // Adjust the thickness of the route line
+      }
+    });
+    directionsDisplay.setMap(this.map);
+  
+    const request = {
+      origin: origin,
+      destination: destination,
+      travelMode: 'DRIVING'
+    };
+  
+    directionsService.route(request, (result: any, status: any) => {
+      if (status === 'OK') {
+        directionsDisplay.setDirections(result);
+  
+        const route = result.routes[0].legs[0];
+        this.duration = route.duration.text;
+        this.distance = route.distance.text;
+      } else {
+        console.error('Directions request failed due to ' + status);
+      }
+    });
+  }
+  createRoute1(origin: any, destination: any) {
+    const directionsService = new google.maps.DirectionsService();
+    const directionsDisplay = new google.maps.DirectionsRenderer();
+    directionsDisplay.setMap(this.map);
+
+    const request = {
+      origin: origin,
+      destination: destination,
+      travelMode: 'DRIVING'
+    };
+
+    directionsService.route(request, (result: any, status: any) => {
+      if (status == 'OK') {
+        directionsDisplay.setDirections(result);
+
+        const route = result.routes[0].legs[0];
+        this.duration = route.duration.text;
+        this.distance = route.distance.text;
+      } else {
+        console.error('Directions request failed due to ' + status);
+      }
+    });
+  }
+
+  async getApiKeyAndLoadMap() {
+    try {
+      const res: any = await this.http.get(`${this.url.serverUrl}api_key`).toPromise();
+      if (res.status) {
+        this.api_key = res.data;
+        if (!this.map) {
+          await this.loadGoogleMapsScript();
+        }
+      } else {
+        console.error('Error fetching API key:', res);
+      }
+    } catch (err) {
+      console.error('Error fetching API key:', err);
+    }
+  }
+
+  async loadGoogleMapsScript() {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${this.api_key}`;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.body.appendChild(script);
+    });
+  }
+
+  initializeMap() {
+    this.map = new google.maps.Map(this.mapElement.nativeElement, {
+      center: { lat: 20.945643, lng: 77.7639723 },
+      zoom: 14,
+      disableDefaultUI: true,
+    });
+  }
+
+  ionViewDidEnter() {
+    if (typeof google === 'undefined') {
+      console.error('Google Maps API script has not loaded.');
+      return;
+    }
+    this.map = new google.maps.Map(this.mapElement.nativeElement, {
+      center: { lat: 20.945643, lng: 77.7639723 },
+      zoom: 14,
+      disableDefaultUI: true,
+    });
+  }
+
+  get_user_current_position(lat: any, lang: any) {
+    this.user_marker = new google.maps.Marker({
+      position: new google.maps.LatLng(lat, lang),
+      map: this.map,
+      draggable: true,
+      animation: google.maps.Animation.DROP,
+      icon: {
+        url: `assets/icon/.png`,
+        scaledSize: new google.maps.Size(60, 60),
+        origin: new google.maps.Point(0, 0),
+      },
+    });
+
+    this.map.setZoom(18);
+    const latLng2 = new google.maps.LatLng(lat, lang);
+    this.map.panTo(latLng2);
+    this.fetch_address(lat, lang);
+    this.user_marker.addListener('dragend', (e: any) => {
+      this.user_lat = e.latLng.lat();
+      this.user_lang = e.latLng.lng();
+      this.url.user_map_lat = e.latLng.lat();
+      this.url.user_map_lan = e.latLng.lng();
+      this.fetch_address(e.latLng.lat(), e.latLng.lng());
+    });
+  }
+
+  fetch_address(lat: any, lng: any) {
+    const reverseGeocodingUrl =
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&sensor=true&key=${this.api_key}`;
+    fetch(reverseGeocodingUrl)
+      .then((result) => result.json())
+      .then((featureCollection) => {
+        if (featureCollection.results && featureCollection.results.length > 0) {
+          this.user_address = featureCollection.results[0].formatted_address;
+          this.url.user_map_address = featureCollection.results[0].formatted_address;
+          this.url.user_map_lat = lat;
+          this.url.user_map_lan = lng;
+          this.btn_disabled = false;
+        } else {
+          console.error('No results found for the given coordinates.');
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching address:', error);
+      });
+  }
+  
 }

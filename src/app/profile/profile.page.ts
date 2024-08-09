@@ -13,6 +13,8 @@ import { Storage } from '@ionic/storage-angular';
 })
 export class ProfilePage implements OnInit {
   user_id1: any;
+  name: any;
+  email: any;
 
   constructor(
     public url: DataService,
@@ -48,7 +50,10 @@ export class ProfilePage implements OnInit {
             if (res === 0) {
               this.url.presentToast('You Have no Profile.');
             } else {
-              console.log(res);
+              console.log(res,40);
+              this.name = res.data.name;
+              this.email = res.data.email;
+              console.log(this.name, 68);
               // this.Restro_Name = res.data[0].Restro_Name;
               // this.Contact_No = res.data[0].Contact_No;
             }
